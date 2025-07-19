@@ -7,18 +7,18 @@ def cli():
     """MDP CLI"""
     pass
 
+API_PREFIX = "/api/mdp"
+
 @cli.command()
 def create_mdp():
-    """Create a new MDP and return its ID"""
-    result = post("/mdp/")
+    result = post(f"{API_PREFIX}/")
     click.echo(json.dumps(result))
 
 @cli.command()
 @click.argument("mdp_id")
 @click.argument("state_name")
 def add_state(mdp_id, state_name):
-    """Add a state to an existing MDP"""
-    result = post(f"/mdp/{mdp_id}/state", json={"name": state_name})
+    result = post(f"{API_PREFIX}/{mdp_id}/state", json={"name": state_name})
     click.echo(json.dumps(result))
 
 @cli.command("add-action")
@@ -26,8 +26,7 @@ def add_state(mdp_id, state_name):
 @click.argument("state")
 @click.argument("action_name")
 def add_action(mdp_id, state, action_name):
-    """Add an action for a specific state in an MDP"""
-    result = post(f"/mdp/{mdp_id}/action", json={"state": state, "name": action_name})
+    result = post(f"{API_PREFIX}/{mdp_id}/action", json={"state": state, "name": action_name})
     click.echo(json.dumps(result))
 
 
