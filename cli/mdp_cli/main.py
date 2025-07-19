@@ -83,3 +83,10 @@ def add_reward(mdp_id, state, action, next_state, reward):
         }
     )
     click.echo(json.dumps(result))
+
+@cli.command("solve")
+@click.argument("mdp_id")
+def solve_mdp(mdp_id):
+    """Solve the MDP using value iteration"""
+    result = post(f"{API_PREFIX}/{mdp_id}/solve")
+    click.echo(json.dumps(result))
