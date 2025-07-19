@@ -63,7 +63,7 @@ export default function AddStateForm({ mdpId }: Props) {
           console.log("✏️ [AddStateForm] stateName changed:", e.target.value);
         }}
         placeholder="State name"
-        className="px-2 py-1 mr-2 text-black rounded"
+        className="px-2 py-1 mr-2 text-white bg-neutral-800 border border-neutral-600 rounded placeholder-gray-400 focus:outline-none"
       />
       <button
         onClick={handleSubmit}
