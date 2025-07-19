@@ -3,7 +3,7 @@
 from typing import Set, Dict
 from pydantic import BaseModel, RootModel
 
-class Actions(RootModel[Set[str]]): pass
+class Actions(RootModel[Dict[str, Set[str]]]): pass
 
 class Transitions(RootModel[Dict[str, Dict[str, Dict[str, float]]]]): pass
 # Structure: transitions[state][action][next_state] = probability
