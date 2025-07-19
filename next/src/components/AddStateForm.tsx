@@ -4,9 +4,10 @@ import { useState } from 'react';
 
 interface Props {
   mdpId: string;
+  onStateAdded?: () => void;  // 👈 optional callback to trigger refresh
 }
 
-export default function AddStateForm({ mdpId }: Props) {
+export default function AddStateForm({ mdpId, onStateAdded }: Props) {
   const [stateName, setStateName] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +48,9 @@ export default function AddStateForm({ mdpId }: Props) {
       setMessage(msg);
       console.log("✅ [AddStateForm] Success:", msg);
       setStateName('');
+
+      // 🔄 Trigger parent to refresh list
+      onStateAdded?.();
     } catch (err: any) {
       console.error("🔥 [AddStateForm] Exception caught:", err);
       setError(`❌ ${err.message}`);
