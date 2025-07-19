@@ -9,6 +9,7 @@ import SelectActionPair from '@/components/SelectActionPair';
 import AddOutcomeForm from '@/components/AddOutcomeForm';
 import AddRewardForm from '@/components/AddRewardForm';
 import MDPRenderComponent from '@/components/MDPRenderComponent';
+import SolveMDPButton from '@/components/SolveMDPButton';
 
 console.log("🧪 Import check - NewMdpButton:", typeof NewMdpButton);
 console.log("🧪 Import check - AddStateForm:", typeof AddStateForm);
@@ -43,6 +44,7 @@ export default function HomePage() {
           <AddOutcomeForm mdpId={mdpId} onOutcomeAdded={() => console.log('🔄 Outcome added')} />
           <AddRewardForm mdpId={mdpId} onRewardAdded={() => console.log('🔄 Reward added')} />
           <MDPRenderComponent mdpId={mdpId} />
+          <SolveMDPButton mdpId={mdpId} />
         </>
       )}
     </main>
