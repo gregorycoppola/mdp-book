@@ -14,7 +14,8 @@ class Rewards(RootModel[Dict[str, Dict[str, Dict[str, float]]]]): pass
 class ValueFunction(RootModel[Dict[str, float]]): pass
 # Structure: V[state] = value
 
-class Policy(RootModel[Dict[str, str]]): pass
+# models/mdp_model.py
+class Policy(RootModel[Dict[str, Optional[str]]]): pass
 # Structure: policy[state] = action
 
 class MDPModel(BaseModel):
