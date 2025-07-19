@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 from app.core.mdp_store import load_mdp_from_redis, save_mdp_to_redis
-from app.models.mdp import MDPModel
+from app.models.mdp_model import MDPModel
 
 router = APIRouter()
 
