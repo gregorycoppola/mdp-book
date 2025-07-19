@@ -1,7 +1,20 @@
+from fastapi import APIRouter
+from pydantic import BaseModel
 from fastapi.responses import JSONResponse
 import logging
 
+from app.core.mdp_store import load_mdp_from_redis, save_mdp_to_redis
+
+# ✅ define router BEFORE using it
+router = APIRouter()
+
 logger = logging.getLogger(__name__)
+
+class TransitionInput(BaseModel):
+    state: str
+    action: str
+    next_state: str
+    probability: float
 
 @router.post("/{mdp_id}/transition")
 def add_transition(mdp_id: str, transition: TransitionInput):
