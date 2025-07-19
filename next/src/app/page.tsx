@@ -10,28 +10,44 @@ export default function Home() {
   const [stateMessage, setStateMessage] = useState<string | null>(null);
 
   const handleCreateMdp = async () => {
+    console.log("🚀 Creating new MDP...");
+  
     setLoading(true);
     setError(null);
     setStateMessage(null);
-
+  
     try {
       const res = await fetch('http://localhost:8000/api/mdp/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
-
+  
+      console.log("📡 Response status:", res.status);
+  
       if (!res.ok) {
+        const errorText = await res.text();
+        console.error("❌ Server responded with error:", errorText);
         throw new Error(`Error ${res.status}`);
       }
-
+  
       const data = await res.json();
+      console.log("📥 Received response JSON:", data);
+  
+      if (!data?.mdp_id) {
+        throw new Error("No mdp_id in response");
+      }
+  
       setMdpId(data.mdp_id);
+      console.log("✅ MDP created successfully. ID:", data.mdp_id);
     } catch (err: any) {
+      console.error("❌ Failed to create MDP:", err);
       setError(`Failed to create MDP: ${err.message}`);
     } finally {
       setLoading(false);
+      console.log("🔚 MDP creation complete");
     }
   };
+  
 
   const handleAddState = async () => {
     if (!mdpId || !stateName) {
