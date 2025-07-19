@@ -1,1 +1,0 @@
-{"states": ["end", "start"], "actions": ["go"], "transitions": {"start": {"go": [[1.0, "end"]]}}, "rewards": {}, "gamma": 0.9}

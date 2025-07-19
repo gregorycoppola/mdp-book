@@ -1,1 +1,0 @@
-{"message": "Transition added: (middle, go) -> end [1.0]"}

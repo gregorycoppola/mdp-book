@@ -1,1 +1,0 @@
-{"message": "Reward set for (middle, go, end)"}
