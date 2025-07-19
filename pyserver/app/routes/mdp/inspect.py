@@ -8,13 +8,30 @@ def inspect_full_mdp(mdp_id: str):
     mdp = mdp_store.get(mdp_id)
     if not mdp:
         return {"error": "MDP not found"}
+    
     return {
         "states": list(mdp["states"]),
-        "actions": list(mdp["actions"]),
-        "transitions": mdp["transitions"],
-        "rewards": mdp["rewards"],
+        "actions": {state: list(actions) for state, actions in mdp["actions"].items()},
+        "transitions": {
+            s: {
+                a: [{"probability": p, "next_state": s1} for (p, s1) in lst]
+                for a, lst in a_dict.items()
+            }
+            for s, a_dict in mdp["transitions"].items()
+        },
+        "rewards": {
+            s: {
+                a: {
+                    s1: r
+                    for s1, r in s1_dict.items()
+                }
+                for a, s1_dict in a_dict.items()
+            }
+            for s, a_dict in mdp["rewards"].items()
+        },
         "gamma": mdp["gamma"]
     }
+
 
 @router.get("/{mdp_id}/states")
 def get_states(mdp_id: str):
