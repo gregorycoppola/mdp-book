@@ -61,3 +61,22 @@ def reset_mdp(mdp_id):
     """Reset the MDP to an empty state (clears all structure)"""
     result = post(f"/mdp/{mdp_id}/reset")
     click.echo(json.dumps(result))
+
+@cli.command("add-reward")
+@click.argument("mdp_id")
+@click.argument("state")
+@click.argument("action")
+@click.argument("next_state")
+@click.argument("reward", type=float)
+def add_reward(mdp_id, state, action, next_state, reward):
+    """Add a reward to (state, action, next_state)"""
+    result = post(
+        f"/mdp/{mdp_id}/reward",
+        json={
+            "state": state,
+            "action": action,
+            "next_state": next_state,
+            "reward": reward
+        }
+    )
+    click.echo(json.dumps(result))
