@@ -1,0 +1,1 @@
+{"detail": [{"type": "missing", "loc": ["body", "action"], "msg": "Field required", "input": {"state": "start", "name": "go"}}]}
