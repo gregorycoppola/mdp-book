@@ -1,0 +1,1 @@
+{"message": "Transition added: (start, go) -> end [1.0]"}
