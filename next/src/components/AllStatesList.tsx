@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 interface Props {
   mdpId: string;
-  refreshTrigger?: number; // Increment this to trigger a refetch externally
+  refreshTrigger?: any; // optional: pass something to trigger refetch
 }
 
 export default function AllStatesList({ mdpId, refreshTrigger }: Props) {
@@ -12,40 +12,31 @@ export default function AllStatesList({ mdpId, refreshTrigger }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchStates = async () => {
-      console.log("📡 [AllStatesList] Fetching states for MDP:", mdpId);
-
-      try {
-        const res = await fetch(`http://localhost:8000/api/mdp/${mdpId}/actions`);
-        const data = await res.json();
-
-        if (!res.ok) {
-          console.error("❌ [AllStatesList] Failed to fetch states:", data);
-          throw new Error(data?.error || `Status ${res.status}`);
+    if (!mdpId) return;
+    console.log(`📡 [AllStatesList] Fetching states for MDP: ${mdpId}`);
+    fetch(`http://localhost:8000/api/mdp/${mdpId}/states`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.states) {
+          console.log('✅ [AllStatesList] Loaded states:\n', data.states);
+          setStates(data.states);
+        } else {
+          throw new Error(data?.error || 'Unexpected response');
         }
-
-        setStates(data.actions || []);
-        console.log("✅ [AllStatesList] Loaded states:", data.actions);
-      } catch (err: any) {
-        setError(`Failed to load states: ${err.message}`);
-      }
-    };
-
-    if (mdpId) {
-      fetchStates();
-    }
+      })
+      .catch((err) => {
+        console.error('❌ [AllStatesList] Failed to load states:', err);
+        setError(err.message);
+      });
   }, [mdpId, refreshTrigger]);
 
   return (
-    <div className="mt-8">
-      <h2 className="text-xl font-semibold mb-2">All States</h2>
-      {error && <p className="text-red-400">{error}</p>}
-      {states.length === 0 && !error && (
-        <p className="text-gray-400 italic">No states found.</p>
-      )}
-      <ul className="list-disc pl-6 text-white">
-        {states.map((state, idx) => (
-          <li key={idx}>{state}</li>
+    <div className="mt-6">
+      <h2 className="text-xl font-semibold mb-2">📋 All States</h2>
+      {error && <p className="text-red-400">Error: {error}</p>}
+      <ul className="list-disc list-inside text-white">
+        {states.map((s, i) => (
+          <li key={i}>{s}</li>
         ))}
       </ul>
     </div>
