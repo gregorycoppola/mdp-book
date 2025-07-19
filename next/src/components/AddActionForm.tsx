@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 interface Props {
   mdpId: string;
-  onActionAdded?: () => void;  // Optional callback
+  onActionAdded?: () => void;
 }
 
 export default function AddActionForm({ mdpId, onActionAdded }: Props) {
@@ -14,23 +14,28 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // 🔁 Fetch states on mount
+  const loadStates = async () => {
+    setError(null);
+    try {
+      const res = await fetch(`http://localhost:8000/api/mdp/${mdpId}/states`);
+      const data = await res.json();
+      if (res.ok && data.states) {
+        setStates(data.states);
+        setSelectedState((prev) =>
+          data.states.includes(prev) ? prev : data.states[0] || ''
+        );
+      } else {
+        throw new Error(data?.error || 'Failed to load states');
+      }
+    } catch (err: any) {
+      console.error('❌ [AddActionForm] loadStates failed:', err);
+      setError(err.message);
+    }
+  };
+
+  // 🔁 Initial load
   useEffect(() => {
-    if (!mdpId) return;
-    fetch(`http://localhost:8000/api/mdp/${mdpId}/states`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.states) {
-          setStates(data.states);
-          setSelectedState(data.states[0] || '');
-        } else {
-          throw new Error(data?.error || 'Unexpected response');
-        }
-      })
-      .catch((err) => {
-        console.error('❌ [AddActionForm] Failed to load states:', err);
-        setError(err.message);
-      });
+    loadStates();
   }, [mdpId]);
 
   const handleSubmit = async () => {
@@ -73,8 +78,8 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
     <div className="mt-6">
       <h2 className="text-xl font-semibold mb-2">🎯 Add Action</h2>
 
-      <div className="mb-2">
-        <label className="mr-2 text-white">From state:</label>
+      <div className="mb-2 flex items-center gap-2">
+        <label className="text-white">From state:</label>
         <select
           value={selectedState}
           onChange={(e) => setSelectedState(e.target.value)}
@@ -86,15 +91,23 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
             </option>
           ))}
         </select>
+        <button
+          onClick={loadStates}
+          className="px-2 py-1 bg-gray-700 hover:bg-gray-800 text-white text-sm rounded"
+        >
+          🔄 Refresh States
+        </button>
       </div>
 
-      <input
-        type="text"
-        value={actionName}
-        onChange={(e) => setActionName(e.target.value)}
-        placeholder="Action name"
-        className="px-2 py-1 mr-2 text-white bg-neutral-800 border border-neutral-600 rounded placeholder-gray-400 focus:outline-none"
-      />
+      <div className="mb-2">
+        <input
+          type="text"
+          value={actionName}
+          onChange={(e) => setActionName(e.target.value)}
+          placeholder="Action name"
+          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded placeholder-gray-400 focus:outline-none"
+        />
+      </div>
 
       <button
         onClick={handleSubmit}
