@@ -18,10 +18,18 @@ def inspect_full_mdp(mdp_id: str):
 
 @router.get("/{mdp_id}/states")
 def get_states(mdp_id: str):
+    print(f"📥 [get_states] Called with mdp_id={mdp_id}")
+
     mdp = mdp_store.get(mdp_id)
     if not mdp:
+        print(f"❌ [get_states] MDP not found for id={mdp_id}")
         return {"error": "MDP not found"}
-    return {"states": list(mdp["states"])}
+    
+    states = sorted(mdp["states"])
+    print(f"📦 [get_states] Retrieved states for MDP {mdp_id}: {states}")
+    
+    return {"states": states}
+
 
 @router.get("/{mdp_id}/actions")
 def get_actions(mdp_id: str):
