@@ -1,6 +1,8 @@
+# pyserver/app/routes/mdp/state.py
+
 from fastapi import APIRouter
 from pydantic import BaseModel
-from app.core.mdp_store import mdp_store  # ✅ absolute import
+from app.core.mdp_store import load_mdp_from_redis, save_mdp_to_redis  # ✅ use Redis-backed storage
 
 router = APIRouter()
 
@@ -10,9 +12,8 @@ class StateInput(BaseModel):
 @router.post("/{mdp_id}/state")
 def add_state(mdp_id: str, state: StateInput):
     print(f"📥 [add_state] Called with mdp_id={mdp_id}, state.name={state.name}")
-    print(f"🔍 [add_state] Known keys in mdp_store: {list(mdp_store.keys())}")
 
-    mdp = mdp_store.get(mdp_id)
+    mdp = load_mdp_from_redis(mdp_id)
     if not mdp:
         print(f"❌ [add_state] MDP not found for mdp_id={mdp_id}")
         return {"error": "MDP not found"}
@@ -22,6 +23,7 @@ def add_state(mdp_id: str, state: StateInput):
     else:
         print(f"➕ [add_state] Adding new state '{state.name}' to MDP {mdp_id}")
         mdp.states.add(state.name)
+        save_mdp_to_redis(mdp_id, mdp)  # ✅ persist change
 
     print(f"✅ [add_state] State added. Current states in MDP {mdp_id}: {sorted(mdp.states)}")
 
