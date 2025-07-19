@@ -1,26 +1,27 @@
-from typing import Dict, List, Set, Tuple
-from pydantic import BaseModel, Field, RootModel
+# pyserver/app/models/mdp_model.py
 
-# Aliases for clarity
-State = str
-Action = str
-NextState = str
-Probability = float
-RewardValue = float
+from typing import Set, Dict
+from pydantic import BaseModel, RootModel
 
-# Nested model types using RootModel
-class Actions(RootModel[Dict[State, Set[Action]]]): pass
-class Transitions(RootModel[Dict[State, Dict[Action, List[Tuple[Probability, NextState]]]]]): pass
-class Rewards(RootModel[Dict[State, Dict[Action, Dict[NextState, RewardValue]]]]): pass
-class ValueFunction(RootModel[Dict[State, float]]): pass
-class Policy(RootModel[Dict[State, Action]]): pass
+class Actions(RootModel[Set[str]]): pass
 
-# Main MDP model
+class Transitions(RootModel[Dict[str, Dict[str, Dict[str, float]]]]): pass
+# Structure: transitions[state][action][next_state] = probability
+
+class Rewards(RootModel[Dict[str, Dict[str, float]]]): pass
+# Structure: rewards[state][action] = reward
+
+class ValueFunction(RootModel[Dict[str, float]]): pass
+# Structure: V[state] = value
+
+class Policy(RootModel[Dict[str, str]]): pass
+# Structure: policy[state] = action
+
 class MDPModel(BaseModel):
-    states: Set[State] = Field(default_factory=set)
-    actions: Actions = Field(default_factory=lambda: Actions(__root__={}))
-    transitions: Transitions = Field(default_factory=lambda: Transitions(__root__={}))
-    rewards: Rewards = Field(default_factory=lambda: Rewards(__root__={}))
-    gamma: float = 0.9
-    V: ValueFunction = Field(default_factory=lambda: ValueFunction(__root__={}))
-    policy: Policy = Field(default_factory=lambda: Policy(__root__={}))
+    states: Set[str]
+    actions: Actions
+    transitions: Transitions
+    rewards: Rewards
+    gamma: float
+    V: ValueFunction
+    policy: Policy
