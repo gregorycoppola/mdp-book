@@ -1,9 +1,22 @@
 from fastapi import FastAPI
-from .routes.mdp import router as mdp_router
+from fastapi.middleware.cors import CORSMiddleware
+from .routes.mdp import router as mdp_router  # adjust path if needed
 
 app = FastAPI()
-app.include_router(mdp_router, prefix="/mdp")
 
+# ✅ CORS setup for frontend at localhost:3000
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # or ["*"] for local dev
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ✅ Mount your MDP router under /api/mdp
+app.include_router(mdp_router, prefix="/api/mdp", tags=["MDP"])
+
+# ✅ Print routes on startup
 @app.on_event("startup")
 def print_routes():
     routes = sorted(app.routes, key=lambda r: r.path)

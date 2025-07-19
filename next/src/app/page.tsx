@@ -12,7 +12,7 @@ export default function Home() {
     setError(null);
 
     try {
-      const res = await fetch('http://localhost:8000/mdp/', {
+      const res = await fetch('http://localhost:8000/api/mdp/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
