@@ -34,29 +34,44 @@ export default function Home() {
   };
 
   const handleAddState = async () => {
-    if (!mdpId || !stateName) return;
+    if (!mdpId || !stateName) {
+      console.warn("Missing mdpId or stateName");
+      return;
+    }
+  
+    console.log("🔧 Submitting new state:", {
+      mdpId,
+      stateName,
+    });
+  
     setError(null);
     setStateMessage(null);
-
+  
     try {
-      const res = await fetch(`http://localhost:8000/api/mdp/${mdpId}/state`, {
+      const response = await fetch(`http://localhost:8000/api/mdp/${mdpId}/state`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: stateName }),
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.error || `Status ${res.status}`);
+  
+      console.log("📡 Response status:", response.status);
+  
+      const data = await response.json();
+      console.log("📥 Response data:", data);
+  
+      if (!response.ok) {
+        throw new Error(data?.error || `Status ${response.status}`);
       }
-
+  
       setStateMessage(data.message || `State "${stateName}" added`);
       setStateName('');
+      console.log("✅ State added successfully:", stateName);
     } catch (err: any) {
+      console.error("❌ Failed to add state:", err);
       setError(`Failed to add state: ${err.message}`);
     }
   };
+  
 
   return (
     <main className="p-8 min-h-screen bg-black text-white">
