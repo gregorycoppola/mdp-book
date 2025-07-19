@@ -10,22 +10,32 @@ def inspect_full_mdp(mdp_id: str):
     mdp = load_mdp_from_redis(mdp_id)
     if not mdp:
         return {"error": "MDP not found"}
-
+    
     return {
-        "states": sorted(mdp.states),
-        "actions": {state: sorted(actions) for state, actions in mdp.actions.root.items()},
+        "states": list(mdp.states),
+        "actions": {state: list(actions) for state, actions in mdp.actions.root.items()},
         "transitions": {
             s: {
-                a: [{"probability": p, "next_state": s1} for (p, s1) in a_list]
-                for a, a_list in a_dict.items()
+                a: [{"probability": prob, "next_state": next_state} for next_state, prob in a_dict.items()]
+                for a, a_dict in a_map.items()
             }
-            for s, a_dict in mdp.transitions.root.items()
+            for s, a_map in mdp.transitions.root.items()
         },
-        "rewards": mdp.rewards.root,
+        "rewards": {
+            s: {
+                a: {
+                    s1: r
+                    for s1, r in s1_dict.items()
+                }
+                for a, s1_dict in a_dict.items()
+            }
+            for s, a_dict in mdp.rewards.root.items()
+        },
         "gamma": mdp.gamma,
         "V": mdp.V.root,
         "policy": mdp.policy.root,
     }
+
 
 @router.get("/{mdp_id}/states")
 def get_states(mdp_id: str):
