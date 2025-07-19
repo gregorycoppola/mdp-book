@@ -26,39 +26,45 @@ def solve_mdp(mdp_id: str):
         for s in states:
             v = V[s]
 
-            candidates = [
-                sum(
-                    p * (R.get(s, {}).get(a, {}).get(s1, 0.0) + gamma * V[s1])
-                    for p, s1 in P.get(s, {}).get(a, [])
+            candidates = []
+            for a in actions.get(s, []):
+                transitions = P.get(s, {}).get(a, [])
+                reward_map = R.get(s, {}).get(a, {})
+                val = sum(
+                    p * (reward_map.get(s1, 0.0) + gamma * V[s1])
+                    for p, s1 in transitions
                 )
-                for a in actions.get(s, [])
-                if a in P.get(s, {})
-            ]
+                candidates.append(val)
 
             if not candidates:
                 print(f"⚠️ [solve_mdp] No valid actions for state '{s}' — assigning V[{s}] = 0.0")
 
             V[s] = max(candidates, default=0.0)
             delta = max(delta, abs(v - V[s]))
+
         if delta < threshold:
             break
 
     policy = {}
     for s in states:
-        action_values = {
-            a: sum(
-                p * (R.get(s, {}).get(a, {}).get(s1, 0.0) + gamma * V[s1])
-                for p, s1 in P.get(s, {}).get(a, [])
-            )
-            for a in actions.get(s, [])
-            if a in P.get(s, {})
-        }
+        best_action = None
+        best_value = float("-inf")
 
-        if not action_values:
-            print(f"⚠️ [solve_mdp] No policy options for state '{s}' — assigning policy[s] = None")
-            policy[s] = None
-        else:
-            policy[s] = max(action_values, key=action_values.get)
+        for a in actions.get(s, []):
+            transitions = P.get(s, {}).get(a, [])
+            reward_map = R.get(s, {}).get(a, {})
+            val = sum(
+                p * (reward_map.get(s1, 0.0) + gamma * V[s1])
+                for p, s1 in transitions
+            )
+            if val > best_value:
+                best_value = val
+                best_action = a
+
+        if best_action is None:
+            print(f"⚠️ [solve_mdp] No best action for state '{s}' — setting policy[s] = None")
+
+        policy[s] = best_action
 
     mdp.V.root = V
     mdp.policy.root = policy
