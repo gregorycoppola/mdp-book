@@ -14,8 +14,8 @@ def solve_mdp(mdp_id: str):
 
     states = mdp.states
     actions = mdp.actions.root
-    P = mdp.transitions
-    R = mdp.rewards
+    P = mdp.transitions.root
+    R = mdp.rewards.root
     gamma = mdp.gamma
 
     V = {s: 0.0 for s in states}
@@ -26,7 +26,7 @@ def solve_mdp(mdp_id: str):
         for s in states:
             v = V[s]
             V[s] = max(
-                sum(p * (R[s][a].get(s1, 0.0) + gamma * V[s1]) for p, s1 in P[s][a])
+                sum(p * (R[s][a].get(s1, 0.0) + gamma * V[s1]) for s1, p in P[s][a].items())
                 if a in P[s] else float('-inf')
                 for a in actions.get(s, [])
             )
@@ -38,14 +38,14 @@ def solve_mdp(mdp_id: str):
     for s in states:
         best_a = max(
             actions.get(s, []),
-            key=lambda a: sum(p * (R[s][a].get(s1, 0.0) + gamma * V[s1]) for p, s1 in P[s][a])
+            key=lambda a: sum(p * (R[s][a].get(s1, 0.0) + gamma * V[s1]) for s1, p in P[s][a].items())
             if a in P[s] else float('-inf'),
             default=None
         )
         policy[s] = best_a
 
-    mdp.V = V
-    mdp.policy = policy
+    mdp.V.root = V
+    mdp.policy.root = policy
 
     save_mdp_to_redis(mdp_id, mdp)
 
