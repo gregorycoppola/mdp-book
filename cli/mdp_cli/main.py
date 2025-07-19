@@ -1,4 +1,5 @@
 import click
+import json
 from mdp_cli.client import post, get
 
 @click.group()
@@ -10,7 +11,7 @@ def cli():
 def create_mdp():
     """Create a new MDP and return its ID"""
     result = post("/mdp/")
-    click.echo(result)
+    click.echo(json.dumps(result))
 
 @cli.command()
 @click.argument("mdp_id")
@@ -18,14 +19,7 @@ def create_mdp():
 def add_state(mdp_id, state_name):
     """Add a state to an existing MDP"""
     result = post(f"/mdp/{mdp_id}/state", json={"name": state_name})
-    click.echo(result)
-
-@cli.command("show-mdp")
-@click.argument("mdp_id")
-def show_mdp(mdp_id):
-    """Show the full structure of the MDP"""
-    result = get(f"/mdp/{mdp_id}")
-    click.echo(result)
+    click.echo(json.dumps(result))
 
 @cli.command("add-action")
 @click.argument("mdp_id")
@@ -33,7 +27,7 @@ def show_mdp(mdp_id):
 def add_action(mdp_id, action_name):
     """Add an action to an existing MDP"""
     result = post(f"/mdp/{mdp_id}/action", json={"name": action_name})
-    click.echo(result)
+    click.echo(json.dumps(result))
 
 @cli.command("add-transition")
 @click.argument("mdp_id")
@@ -52,11 +46,18 @@ def add_transition(mdp_id, state_name, action_name, next_state_name, probability
             "probability": probability,
         },
     )
-    click.echo(result)
+    click.echo(json.dumps(result))
+
+@cli.command("show-mdp")
+@click.argument("mdp_id")
+def show_mdp(mdp_id):
+    """Show the full structure of the MDP"""
+    result = get(f"/mdp/{mdp_id}")
+    click.echo(json.dumps(result))
 
 @cli.command("reset")
 @click.argument("mdp_id")
 def reset_mdp(mdp_id):
     """Reset the MDP to an empty state (clears all structure)"""
     result = post(f"/mdp/{mdp_id}/reset")
-    click.echo(result)
+    click.echo(json.dumps(result))
