@@ -3,6 +3,9 @@ import { useState } from 'react';
 import NewMdpButton from '@/components/NewMdpButton';
 import AddStateForm from '@/components/AddStateForm';
 
+console.log("🧪 Import check - NewMdpButton:", typeof NewMdpButton);
+console.log("🧪 Import check - AddStateForm:", typeof AddStateForm);
+
 export default function HomePage() {
   const [mdpId, setMdpId] = useState<string | null>(null);
 
