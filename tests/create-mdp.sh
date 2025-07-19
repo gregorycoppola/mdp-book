@@ -1,8 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-mkdir -p logs
-
 echo "📦 Creating MDP..."
 resp=$(mdp create-mdp)
 echo "$resp"
