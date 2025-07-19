@@ -8,7 +8,7 @@ class Actions(RootModel[Dict[str, Set[str]]]): pass
 class Transitions(RootModel[Dict[str, Dict[str, Dict[str, float]]]]): pass
 # Structure: transitions[state][action][next_state] = probability
 
-class Rewards(RootModel[Dict[str, Dict[str, float]]]): pass
+class Rewards(RootModel[Dict[str, Dict[str, Dict[str, float]]]]): pass
 # Structure: rewards[state][action] = reward
 
 class ValueFunction(RootModel[Dict[str, float]]): pass
