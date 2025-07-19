@@ -75,3 +75,17 @@ def get_gamma(mdp_id: str):
     if not mdp:
         return {"error": "MDP not found"}
     return {"gamma": mdp["gamma"]}
+
+@router.get("/{mdp_id}/values")
+def get_values(mdp_id: str):
+    mdp = mdp_store.get(mdp_id)
+    if not mdp:
+        return {"error": "MDP not found"}
+    return {"values": mdp.get("V", {})}
+
+@router.get("/{mdp_id}/policy")
+def get_policy(mdp_id: str):
+    mdp = mdp_store.get(mdp_id)
+    if not mdp:
+        return {"error": "MDP not found"}
+    return {"policy": mdp.get("policy", {})}

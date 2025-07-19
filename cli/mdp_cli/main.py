@@ -90,3 +90,15 @@ def solve_mdp(mdp_id):
     """Solve the MDP using value iteration"""
     result = post(f"{API_PREFIX}/{mdp_id}/solve")
     click.echo(json.dumps(result))
+
+@cli.command("get-values")
+@click.argument("mdp_id")
+def get_values(mdp_id):
+    result = get(f"{API_PREFIX}/{mdp_id}/values")
+    click.echo(json.dumps(result))
+
+@cli.command("get-policy")
+@click.argument("mdp_id")
+def get_policy(mdp_id):
+    result = get(f"{API_PREFIX}/{mdp_id}/policy")
+    click.echo(json.dumps(result))
