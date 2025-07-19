@@ -7,12 +7,15 @@ interface Props {
   onActionAdded?: () => void;
 }
 
+type ActionsByState = Record<string, string[]>;
+
 export default function AddActionForm({ mdpId, onActionAdded }: Props) {
   const [states, setStates] = useState<string[]>([]);
   const [selectedState, setSelectedState] = useState<string>('');
   const [actionName, setActionName] = useState<string>('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [actionsByState, setActionsByState] = useState<ActionsByState>({});
 
   const loadStates = async () => {
     setError(null);
@@ -33,9 +36,26 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
     }
   };
 
-  // 🔁 Initial load
+  const loadActions = async () => {
+    setError(null);
+    try {
+      const res = await fetch(`http://localhost:8000/api/mdp/${mdpId}/actions`);
+      const data = await res.json();
+      if (res.ok && data.actions) {
+        setActionsByState(data.actions);
+      } else {
+        throw new Error(data?.error || 'Failed to load actions');
+      }
+    } catch (err: any) {
+      console.error('❌ [AddActionForm] loadActions failed:', err);
+      setError(err.message);
+    }
+  };
+
+  // 🔁 Load on mount
   useEffect(() => {
     loadStates();
+    loadActions();
   }, [mdpId]);
 
   const handleSubmit = async () => {
@@ -69,6 +89,7 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
       setActionName('');
 
       onActionAdded?.();
+      await loadActions(); // Refresh actions after successful addition
     } catch (err: any) {
       setError(`❌ ${err.message}`);
     }
@@ -92,10 +113,13 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
           ))}
         </select>
         <button
-          onClick={loadStates}
+          onClick={() => {
+            loadStates();
+            loadActions();
+          }}
           className="px-2 py-1 bg-gray-700 hover:bg-gray-800 text-white text-sm rounded"
         >
-          🔄 Refresh States
+          🔄 Refresh
         </button>
       </div>
 
@@ -118,6 +142,17 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
 
       {message && <p className="mt-2 text-green-400">{message}</p>}
       {error && <p className="mt-2 text-red-400">{error}</p>}
+
+      {/* 🔎 Show actions for selected state */}
+      <div className="mt-4 text-sm text-white">
+        <h3 className="font-semibold">Actions for <code>{selectedState}</code>:</h3>
+        <ul className="list-disc list-inside mt-1">
+          {(actionsByState[selectedState] || []).map((a, i) => (
+            <li key={i}>{a}</li>
+          ))}
+          {actionsByState[selectedState]?.length === 0 && <li>(none yet)</li>}
+        </ul>
+      </div>
     </div>
   );
 }
