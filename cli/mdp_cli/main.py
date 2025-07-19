@@ -10,10 +10,12 @@ def cli():
 API_PREFIX = "/api/mdp"
 
 @cli.command()
-def create_mdp():
+@click.option("--gamma", default=0.9, type=float, help="Discount factor (gamma) for the MDP")
+def create_mdp(gamma):
     """Create a new MDP and return its ID"""
-    result = post(f"{API_PREFIX}/")
+    result = post(f"{API_PREFIX}/", json={"gamma": gamma})
     click.echo(json.dumps(result))
+
 
 @cli.command()
 @click.argument("mdp_id")

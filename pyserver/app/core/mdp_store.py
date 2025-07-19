@@ -28,7 +28,7 @@ def create_mdp() -> str:
         actions=Actions({}),
         transitions=Transitions({}),
         rewards=Rewards({}),
-        gamma=0.9,
+        gamma=1.0,
         V=ValueFunction({}),
         policy=Policy({})
     )

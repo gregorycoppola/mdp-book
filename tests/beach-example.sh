@@ -6,7 +6,7 @@ set -euo pipefail
 # Beach can lead to beach_sun (10 reward) or beach_rain (0 reward)
 
 echo "\U0001F4E6 Creating MDP..."
-create_out=$(mdp create-mdp)
+create_out=$(mdp create-mdp --gamma 1.0)
 echo "$create_out"
 
 mdp_id=$(echo "$create_out" | jq -r '.mdp_id')
