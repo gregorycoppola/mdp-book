@@ -7,6 +7,7 @@ import AllStatesList from '@/components/AllStatesList';
 import AddActionForm from '@/components/AddActionForm';
 import SelectActionPair from '@/components/SelectActionPair';
 import AddOutcomeForm from '@/components/AddOutcomeForm';
+import AddRewardForm from '@/components/AddRewardForm';
 
 console.log("🧪 Import check - NewMdpButton:", typeof NewMdpButton);
 console.log("🧪 Import check - AddStateForm:", typeof AddStateForm);
@@ -39,6 +40,7 @@ export default function HomePage() {
           <AddActionForm mdpId={mdpId} onActionAdded={() => console.log('🔄 Action added')} />
           <SelectActionPair mdpId={mdpId} onPairSelected={(s, a) => console.log('🔄 Selected pair:', s, a)} />
           <AddOutcomeForm mdpId={mdpId} onOutcomeAdded={() => console.log('🔄 Outcome added')} />
+          <AddRewardForm mdpId={mdpId} onRewardAdded={() => console.log('🔄 Reward added')} />
         </>
       )}
     </main>
