@@ -28,9 +28,9 @@ def add_state(mdp_id, state_name):
 @click.argument("state")
 @click.argument("action_name")
 def add_action(mdp_id, state, action_name):
-    """Add an action for a specific state in an MDP"""
-    result = post(f"{API_PREFIX}/{mdp_id}/action", json={"state": state, "name": action_name})
+    result = post(f"{API_PREFIX}/{mdp_id}/action", json={"state": state, "action": action_name})
     click.echo(json.dumps(result))
+
 
 @cli.command("add-transition")
 @click.argument("mdp_id")
