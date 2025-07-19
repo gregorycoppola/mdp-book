@@ -1,8 +1,11 @@
 # pyserver/app/core/mdp_store.py
 
 from uuid import uuid4
-from models.mdp_model import MDPModel, Actions, Transitions, Rewards, ValueFunction, Policy
 from typing import Dict
+from models.mdp_model import MDPModel, Actions, Transitions, Rewards, ValueFunction, Policy
+
+# ✅ Declare the store
+mdp_store: Dict[str, MDPModel] = {}
 
 def create_mdp():
     mdp_id = str(uuid4())
