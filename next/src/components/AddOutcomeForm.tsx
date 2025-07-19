@@ -43,7 +43,9 @@ export default function AddOutcomeForm({ mdpId, onOutcomeAdded }: Props) {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data?.error || 'Failed to add outcome');
+        console.error('❌ [AddOutcomeForm] Server error:', data);
+        setError(data?.error || '❌ Failed to add outcome');
+        return;
       }
 
       const msg = data.message || `Outcome "${nextState}" added to (${sourceState}, ${action}) with p=${parsedProb}`;
