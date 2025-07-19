@@ -1,0 +1,9 @@
+[project]
+name = "mdp"
+version = "0.1.0"
+description = "Command-line tool for working with Markov Decision Processes"
+requires-python = ">=3.8"
+dependencies = ["click"]
+
+[project.scripts]
+mdp = "mdp_cli.main:cli"

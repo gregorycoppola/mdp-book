@@ -1,0 +1,59 @@
+*.aux
+*.log
+*.out
+*.toc
+*.pdf
+*.synctex.gz
+*.bbl
+*.blg
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+pip-wheel-metadata/
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.python-version
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Pytest
+.cache/
+
+# mypy
+.mypy_cache/
+
+# Coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+*.log
