@@ -23,11 +23,13 @@ def add_state(mdp_id, state_name):
 
 @cli.command("add-action")
 @click.argument("mdp_id")
+@click.argument("state")
 @click.argument("action_name")
-def add_action(mdp_id, action_name):
-    """Add an action to an existing MDP"""
-    result = post(f"/mdp/{mdp_id}/action", json={"name": action_name})
+def add_action(mdp_id, state, action_name):
+    """Add an action for a specific state in an MDP"""
+    result = post(f"/mdp/{mdp_id}/action", json={"state": state, "name": action_name})
     click.echo(json.dumps(result))
+
 
 @cli.command("add-transition")
 @click.argument("mdp_id")
