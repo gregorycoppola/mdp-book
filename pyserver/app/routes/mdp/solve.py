@@ -1,5 +1,3 @@
-# pyserver/app/routes/mdp/solve.py
-
 from fastapi import APIRouter
 from app.core.mdp_store import load_mdp_from_redis, save_mdp_to_redis
 from app.models.mdp_model import MDPModel
@@ -9,13 +7,19 @@ import logging
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+
 @router.post("/{mdp_id}/solve")
 def solve_mdp(mdp_id: str):
     mdp: MDPModel = load_mdp_from_redis(mdp_id)
     if not mdp:
         return {"error": "MDP not found"}
 
-    print_graph_structure(mdp)  # for debugging
+    # 🧪 Validate structure
+    error = validate_mdp_for_solving(mdp)
+    if error:
+        return {"error": error}
+
+    print_graph_structure(mdp)  # Debug output
 
     V = run_value_iteration(mdp)
     policy = extract_policy(mdp, V)
@@ -29,6 +33,28 @@ def solve_mdp(mdp_id: str):
         "V": V,
         "policy": policy
     }
+
+
+def validate_mdp_for_solving(mdp: MDPModel) -> str | None:
+    if not mdp.states:
+        return "Cannot solve MDP: no states defined"
+
+    if not mdp.actions.root:
+        return "Cannot solve MDP: no actions defined"
+
+    if not any(mdp.actions.root.get(s) for s in mdp.states):
+        return "Cannot solve MDP: no actions assigned to any state"
+
+    if not mdp.transitions.root:
+        return "Cannot solve MDP: no transitions defined"
+
+    for state, action_map in mdp.transitions.root.items():
+        for action, nexts in action_map.items():
+            if not nexts:
+                return f"State '{state}' has action '{action}' with no defined transitions"
+
+    # All good
+    return None
 
 
 def run_value_iteration(mdp: MDPModel, threshold: float = 1e-6) -> dict:
