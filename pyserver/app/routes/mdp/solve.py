@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 from app.core.mdp_store import load_mdp_from_redis, save_mdp_to_redis
 from app.models.mdp_model import MDPModel
+from app.utils.pretty_print import print_graph_structure  # add this import
 
 router = APIRouter()
 
@@ -12,6 +13,8 @@ def solve_mdp(mdp_id: str):
     if not mdp:
         return {"error": "MDP not found"}
 
+    print_graph_structure(mdp)
+    
     states = mdp.states
     actions = mdp.actions.root
     P = mdp.transitions.root
