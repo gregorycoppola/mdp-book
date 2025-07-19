@@ -1,17 +1,13 @@
+# pyserver/app/routes/mdp/reset.py
+
 from fastapi import APIRouter
-from core.mdp_store import mdp_store
+from app.core.mdp_store import delete_mdp_from_redis  # ✅ new Redis-based function
 
 router = APIRouter()
 
-@router.post("/{mdp_id}/reset")
+@router.delete("/{mdp_id}")
 def reset_mdp(mdp_id: str):
-    mdp = mdp_store.get(mdp_id)
-    if not mdp:
-        return {"error": "MDP not found"}
-    mdp["states"].clear()
-    mdp["actions"].clear()
-    mdp["transitions"].clear()
-    mdp["rewards"].clear()
-    mdp["V"].clear()
-    mdp["policy"].clear()
+    deleted = delete_mdp_from_redis(mdp_id)
+    if not deleted:
+        return {"error": "MDP not found or already deleted"}
     return {"message": f"MDP {mdp_id} has been reset"}
