@@ -1,17 +1,11 @@
-from collections import defaultdict
+# pyserver/app/core/mdp_store.py
+
 from uuid import uuid4
+from models.mdp_model import MDPModel
 
-mdp_store = {}
+mdp_store: Dict[str, MDPModel] = {}
 
-def create_mdp():
+def create_mdp() -> str:
     mdp_id = str(uuid4())
-    mdp_store[mdp_id] = {
-        "states": set(),                            # set of all states
-        "actions": defaultdict(set),               # state → set of available actions
-        "transitions": defaultdict(lambda: defaultdict(list)),  # s → a → [(p, s')]
-        "rewards": defaultdict(lambda: defaultdict(dict)),      # s → a → s' → r
-        "gamma": 0.9,
-        "V": {},
-        "policy": {}
-    }
+    mdp_store[mdp_id] = MDPModel()
     return mdp_id
