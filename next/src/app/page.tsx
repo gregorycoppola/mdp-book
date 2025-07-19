@@ -4,6 +4,7 @@ import { useState } from 'react';
 import NewMdpButton from '@/components/NewMdpButton';
 import AddStateForm from '@/components/AddStateForm';
 import AllStatesList from '@/components/AllStatesList';
+import AddActionForm from '@/components/AddActionForm';
 
 console.log("🧪 Import check - NewMdpButton:", typeof NewMdpButton);
 console.log("🧪 Import check - AddStateForm:", typeof AddStateForm);
@@ -33,6 +34,7 @@ export default function HomePage() {
           <p className="mt-4 text-green-400">MDP ID: {mdpId}</p>
           <AddStateForm mdpId={mdpId} onStateAdded={handleStateAdded} />
           <AllStatesList mdpId={mdpId} refreshTrigger={refresh} />
+          <AddActionForm mdpId={mdpId} onActionAdded={() => console.log('🔄 Action added')} />
         </>
       )}
     </main>
