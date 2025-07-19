@@ -16,35 +16,38 @@ export default function SelectActionPair({ mdpId, onPairSelected }: Props) {
   const [selectedAction, setSelectedAction] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch actions for all states
-  useEffect(() => {
+  const loadActions = async () => {
     if (!mdpId) return;
 
+    setError(null);
     console.log(`📡 [SelectActionPair] Fetching actions for MDP: ${mdpId}`);
-    fetch(`http://localhost:8000/api/mdp/${mdpId}/actions`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.actions) {
-          console.log('✅ [SelectActionPair] Loaded actions:\n', data.actions);
-          setActionsByState(data.actions);
+    try {
+      const res = await fetch(`http://localhost:8000/api/mdp/${mdpId}/actions`);
+      const data = await res.json();
 
-          const states = Object.keys(data.actions);
-          setSourceStates(states);
-          setSelectedState((prev) => states.includes(prev) ? prev : states[0] || '');
-        } else {
-          throw new Error(data?.error || 'Unexpected response');
-        }
-      })
-      .catch((err) => {
-        console.error('❌ [SelectActionPair] Failed to load actions:', err);
-        setError(err.message);
-      });
+      if (res.ok && data.actions) {
+        console.log('✅ [SelectActionPair] Loaded actions:\n', data.actions);
+        setActionsByState(data.actions);
+
+        const states = Object.keys(data.actions);
+        setSourceStates(states);
+        setSelectedState((prev) => states.includes(prev) ? prev : states[0] || '');
+      } else {
+        throw new Error(data?.error || 'Unexpected response');
+      }
+    } catch (err: any) {
+      console.error('❌ [SelectActionPair] Failed to load actions:', err);
+      setError(err.message);
+    }
+  };
+
+  useEffect(() => {
+    loadActions();
   }, [mdpId]);
 
-  // Reset action when state changes
   useEffect(() => {
     const actions = actionsByState[selectedState] || [];
-    setSelectedAction(actions[0] || '');
+    setSelectedAction((prev) => actions.includes(prev) ? prev : actions[0] || '');
   }, [selectedState, actionsByState]);
 
   const handleSubmit = () => {
@@ -95,6 +98,13 @@ export default function SelectActionPair({ mdpId, onPairSelected }: Props) {
           className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white mt-6"
         >
           Confirm Pair
+        </button>
+
+        <button
+          onClick={loadActions}
+          className="px-2 py-1 bg-gray-700 hover:bg-gray-800 text-white text-sm rounded mt-6"
+        >
+          🔄 Refresh
         </button>
       </div>
 
