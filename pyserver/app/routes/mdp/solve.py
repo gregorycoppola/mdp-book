@@ -74,7 +74,7 @@ def extract_policy(mdp: MDPModel, V: dict) -> dict:
         best_action = None
         best_value = float('-inf')
 
-        for a in actions.get(s, []):
+        for a in actions.get(s, []):  # Will skip loop entirely for terminal states
             transitions = P.get(s, {}).get(a, {}).items()
             reward_map = R.get(s, {}).get(a, {})
             value = sum(
@@ -85,6 +85,7 @@ def extract_policy(mdp: MDPModel, V: dict) -> dict:
                 best_value = value
                 best_action = a
 
-        policy[s] = best_action
+        policy[s] = best_action  # ← allows None if no action found
 
     return policy
+
