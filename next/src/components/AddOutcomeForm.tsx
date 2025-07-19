@@ -12,6 +12,7 @@ export default function AddOutcomeForm({ mdpId, onOutcomeAdded }: Props) {
   const [sourceState, setSourceState] = useState<string>('');
   const [action, setAction] = useState<string>('');
   const [nextState, setNextState] = useState<string>('');
+  const [probability, setProbability] = useState<string>('1.0'); // as string for form input
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,8 +20,10 @@ export default function AddOutcomeForm({ mdpId, onOutcomeAdded }: Props) {
     setMessage(null);
     setError(null);
 
-    if (!sourceState || !action || !nextState) {
-      setError('⚠️ Must select state, action, and next state');
+    const parsedProb = parseFloat(probability);
+
+    if (!sourceState || !action || !nextState || isNaN(parsedProb)) {
+      setError('⚠️ Must select state, action, and next state and provide a valid probability');
       return;
     }
 
@@ -33,7 +36,7 @@ export default function AddOutcomeForm({ mdpId, onOutcomeAdded }: Props) {
           state: sourceState,
           action,
           next_state: nextState,
-          probability: 1.0, // dummy value
+          probability: parsedProb,
         }),
       });
 
@@ -43,9 +46,10 @@ export default function AddOutcomeForm({ mdpId, onOutcomeAdded }: Props) {
         throw new Error(data?.error || 'Failed to add outcome');
       }
 
-      const msg = data.message || `Outcome "${nextState}" added to (${sourceState}, ${action})`;
+      const msg = data.message || `Outcome "${nextState}" added to (${sourceState}, ${action}) with p=${parsedProb}`;
       setMessage(msg);
       setNextState('');
+      setProbability('1.0');
       onOutcomeAdded?.();
     } catch (err: any) {
       console.error('❌ [AddOutcomeForm] Error:', err);
@@ -73,6 +77,17 @@ export default function AddOutcomeForm({ mdpId, onOutcomeAdded }: Props) {
           value={nextState}
           onChange={(e) => setNextState(e.target.value)}
           placeholder="e.g. sunny-beach"
+          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded w-full"
+        />
+      </div>
+
+      <div className="mb-3">
+        <label className="block text-white mb-1">Probability:</label>
+        <input
+          type="text"
+          value={probability}
+          onChange={(e) => setProbability(e.target.value)}
+          placeholder="e.g. 0.8"
           className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded w-full"
         />
       </div>
