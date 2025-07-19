@@ -1,19 +1,22 @@
+# pyserver/app/routes/mdp/solve.py
+
 from fastapi import APIRouter
-from core.mdp_store import mdp_store
+from app.core.mdp_store import load_mdp_from_redis, save_mdp_to_redis
+from app.models.mdp import MDPModel
 
 router = APIRouter()
 
 @router.post("/{mdp_id}/solve")
 def solve_mdp(mdp_id: str):
-    mdp = mdp_store.get(mdp_id)
+    mdp: MDPModel = load_mdp_from_redis(mdp_id)
     if not mdp:
         return {"error": "MDP not found"}
 
-    states = mdp["states"]
-    actions = mdp["actions"]
-    P = mdp["transitions"]
-    R = mdp["rewards"]
-    gamma = mdp["gamma"]
+    states = mdp.states
+    actions = mdp.actions.root
+    P = mdp.transitions
+    R = mdp.rewards
+    gamma = mdp.gamma
 
     V = {s: 0.0 for s in states}
     threshold = 1e-6
@@ -25,7 +28,7 @@ def solve_mdp(mdp_id: str):
             V[s] = max(
                 sum(p * (R[s][a].get(s1, 0.0) + gamma * V[s1]) for p, s1 in P[s][a])
                 if a in P[s] else float('-inf')
-                for a in actions
+                for a in actions.get(s, [])
             )
             delta = max(delta, abs(v - V[s]))
         if delta < threshold:
@@ -33,13 +36,17 @@ def solve_mdp(mdp_id: str):
 
     policy = {}
     for s in states:
-        best_a = max(actions, key=lambda a:
-            sum(p * (R[s][a].get(s1, 0.0) + gamma * V[s1]) for p, s1 in P[s][a])
-            if a in P[s] else float('-inf')
+        best_a = max(
+            actions.get(s, []),
+            key=lambda a: sum(p * (R[s][a].get(s1, 0.0) + gamma * V[s1]) for p, s1 in P[s][a])
+            if a in P[s] else float('-inf'),
+            default=None
         )
         policy[s] = best_a
 
-    mdp["V"] = V
-    mdp["policy"] = policy
+    mdp.V = V
+    mdp.policy = policy
+
+    save_mdp_to_redis(mdp_id, mdp)
 
     return {"message": "Value iteration completed"}
