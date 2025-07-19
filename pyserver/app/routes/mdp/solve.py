@@ -10,7 +10,8 @@ def validate_mdp_for_solving(mdp: dict) -> tuple[bool, str]:
 
     for state in states:
         if state not in actions or not actions[state]:
-            return False, f"State '{state}' has no actions defined."
+            # ✅ Allow terminal states with no actions
+            continue
 
         for action in actions[state]:
             if state not in transitions or action not in transitions[state]:
@@ -22,6 +23,7 @@ def validate_mdp_for_solving(mdp: dict) -> tuple[bool, str]:
                     return False, f"Transition from (state='{state}', action='{action}') leads to unknown state '{next_state}'."
 
     return True, "MDP is valid"
+
 
 @router.post("/{mdp_id}/solve")
 def solve_mdp(mdp_id: str):
