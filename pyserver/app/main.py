@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routes.mdp import router as mdp_router  # adjust path if needed
+from app.routes.mdp import router as mdp_router  # adjust path if needed
 
 app = FastAPI()
 
