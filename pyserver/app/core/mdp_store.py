@@ -11,11 +11,11 @@ def create_mdp():
     mdp_id = str(uuid4())
     mdp_store[mdp_id] = MDPModel(
         states=set(),
-        actions=Actions(set()),
-        transitions=Transitions({}),
-        rewards=Rewards({}),
+        actions=Actions({}),  # ✅ FIXED
+        transitions=Transitions(__root__={}),
+        rewards=Rewards(__root__={}),
         gamma=0.9,
-        V=ValueFunction({}),
-        policy=Policy({})
+        V=ValueFunction(__root__={}),
+        policy=Policy(__root__={})
     )
     return mdp_id
