@@ -6,6 +6,7 @@ import AddStateForm from '@/components/AddStateForm';
 import AllStatesList from '@/components/AllStatesList';
 import AddActionForm from '@/components/AddActionForm';
 import SelectActionPair from '@/components/SelectActionPair';
+import AddOutcomeForm from '@/components/AddOutcomeForm';
 
 console.log("🧪 Import check - NewMdpButton:", typeof NewMdpButton);
 console.log("🧪 Import check - AddStateForm:", typeof AddStateForm);
@@ -37,6 +38,7 @@ export default function HomePage() {
           <AllStatesList mdpId={mdpId} refreshTrigger={refresh} />
           <AddActionForm mdpId={mdpId} onActionAdded={() => console.log('🔄 Action added')} />
           <SelectActionPair mdpId={mdpId} onPairSelected={(s, a) => console.log('🔄 Selected pair:', s, a)} />
+          <AddOutcomeForm mdpId={mdpId} onOutcomeAdded={() => console.log('🔄 Outcome added')} />
         </>
       )}
     </main>
