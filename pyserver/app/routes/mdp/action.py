@@ -1,16 +1,18 @@
-from fastapi import APIRouter, Path
+from fastapi import APIRouter
 from pydantic import BaseModel
 from core.mdp_store import mdp_store
 
 router = APIRouter()
 
 class ActionInput(BaseModel):
-    name: str
+    state: str
+    action: str
 
 @router.post("/{mdp_id}/action")
-def add_action(mdp_id: str, action: ActionInput):
+def add_action(mdp_id: str, payload: ActionInput):
     mdp = mdp_store.get(mdp_id)
     if not mdp:
         return {"error": "MDP not found"}
-    mdp["actions"].add(action.name)
-    return {"message": f"Action '{action.name}' added"}
+
+    mdp["actions"][payload.state].add(payload.action)
+    return {"message": f"Action '{payload.action}' added to state '{payload.state}'"}
