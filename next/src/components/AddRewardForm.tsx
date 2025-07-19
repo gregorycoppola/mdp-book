@@ -19,13 +19,24 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
   const handleSubmit = async () => {
     setMessage(null);
     setError(null);
-
-    const parsedReward = parseFloat(reward);
-    if (!sourceState || !action || !nextState || isNaN(parsedReward)) {
+  
+    const trimmedNextState = nextState.trim();
+    const trimmedReward = reward.trim();
+    const parsedReward = parseFloat(trimmedReward);
+  
+    console.log('🧪 Submitting reward with:', {
+      sourceState,
+      action,
+      nextState: trimmedNextState,
+      reward: trimmedReward,
+      parsedReward
+    });
+  
+    if (!sourceState || !action || !trimmedNextState || isNaN(parsedReward)) {
       setError('⚠️ Must select a state/action pair, next state, and enter a valid reward');
       return;
     }
-
+  
     try {
       const url = `http://localhost:8000/api/mdp/${mdpId}/reward`;
       const res = await fetch(url, {
@@ -34,18 +45,18 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
         body: JSON.stringify({
           state: sourceState,
           action,
-          next_state: nextState,
+          next_state: trimmedNextState,
           reward: parsedReward,
         }),
       });
-
+  
       const data = await res.json();
-
+  
       if (!res.ok) {
         throw new Error(data?.error || 'Failed to add reward');
       }
-
-      const msg = data.message || `Reward set for (${sourceState}, ${action}, ${nextState}) = ${parsedReward}`;
+  
+      const msg = data.message || `Reward set for (${sourceState}, ${action}, ${trimmedNextState}) = ${parsedReward}`;
       setMessage(msg);
       setNextState('');
       setReward('0.0');
@@ -55,6 +66,7 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
       setError(`❌ ${err.message}`);
     }
   };
+  
 
   return (
     <div className="mt-6">
