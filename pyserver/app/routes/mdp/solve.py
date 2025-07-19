@@ -13,13 +13,12 @@ def solve_mdp(mdp_id: str):
     mdp: MDPModel = load_mdp_from_redis(mdp_id)
     if not mdp:
         return {"error": "MDP not found"}
+    print_graph_structure(mdp)  # Debug output
 
     # 🧪 Validate structure
     error = validate_mdp_for_solving(mdp)
     if error:
         return {"error": error}
-
-    print_graph_structure(mdp)  # Debug output
 
     V = run_value_iteration(mdp)
     policy = extract_policy(mdp, V)
