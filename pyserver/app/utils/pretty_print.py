@@ -1,6 +1,11 @@
 def print_graph_structure(mdp):
+    from pprint import pprint
+
+    print("\n📦 Raw JSON Dump:")
+    print(mdp.model_dump_json(indent=2))  # ✅ Dump structured JSON
+
     print("\n🔎 MDP Graph Structure:")
-    
+
     print("States:")
     for state in sorted(mdp.states):
         print(f"  • {state}")
@@ -13,7 +18,14 @@ def print_graph_structure(mdp):
     print("\nTransitions:")
     for state, actions in mdp.transitions.root.items():
         for action, outcomes in actions.items():
-            for prob, next_state in outcomes:  # ✅ Unpack tuple
+            for outcome in outcomes:
+                try:
+                    # Try dict format first
+                    prob = outcome["probability"]
+                    next_state = outcome["next_state"]
+                except (TypeError, KeyError):
+                    # Fallback to tuple format
+                    prob, next_state = outcome
                 print(f"  • {state} --[{action}, p={prob}]--> {next_state}")
 
     print("\nRewards:")
@@ -24,3 +36,4 @@ def print_graph_structure(mdp):
 
     print(f"\nDiscount factor (gamma): {mdp.gamma}")
     print("🔚 End of Graph\n")
+
