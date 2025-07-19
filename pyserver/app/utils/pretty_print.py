@@ -12,7 +12,9 @@ def print_graph_structure(mdp):
     print("\nTransitions:")
     for state, actions in mdp.transitions.root.items():
         for action, outcomes in actions.items():
-            for prob, next_state in outcomes:
+            for outcome in outcomes:
+                prob = outcome["probability"]
+                next_state = outcome["next_state"]
                 print(f"  • {state} --[{action}, p={prob}]--> {next_state}")
     
     print("\nRewards:")
@@ -23,4 +25,3 @@ def print_graph_structure(mdp):
 
     print(f"\nDiscount factor (gamma): {mdp.gamma}")
     print("🔚 End of Graph\n")
-
