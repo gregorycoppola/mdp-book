@@ -11,7 +11,7 @@ def create_mdp():
     mdp_id = str(uuid4())
     mdp_store[mdp_id] = MDPModel(
         states=set(),
-        actions=Actions(__root__={}),
+        actions=Actions(__root__=set()),
         transitions=Transitions(__root__={}),
         rewards=Rewards(__root__={}),
         gamma=0.9,
