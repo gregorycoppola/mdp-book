@@ -1,9 +1,10 @@
 def print_graph_structure(mdp):
     print("\n🔎 MDP Graph Structure:")
+    
     print("States:")
     for state in sorted(mdp.states):
         print(f"  • {state}")
-    
+
     print("\nActions per State:")
     for state in sorted(mdp.actions.root.keys()):
         actions = sorted(mdp.actions.root[state])
@@ -12,11 +13,9 @@ def print_graph_structure(mdp):
     print("\nTransitions:")
     for state, actions in mdp.transitions.root.items():
         for action, outcomes in actions.items():
-            for outcome in outcomes:
-                prob = outcome["probability"]
-                next_state = outcome["next_state"]
+            for prob, next_state in outcomes:  # ✅ Unpack tuple
                 print(f"  • {state} --[{action}, p={prob}]--> {next_state}")
-    
+
     print("\nRewards:")
     for state, actions in mdp.rewards.root.items():
         for action, next_rewards in actions.items():
