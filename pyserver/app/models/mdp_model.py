@@ -1,6 +1,6 @@
 # pyserver/app/models/mdp_model.py
 
-from typing import Set, Dict
+from typing import Set, Dict, Optional
 from pydantic import BaseModel, RootModel
 
 class Actions(RootModel[Dict[str, Set[str]]]): pass
