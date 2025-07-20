@@ -68,13 +68,7 @@ export default function SelectActionPair({ mdpId, onPairSelected }: Props) {
             Selected: <code>{selectedState}</code> → <code>{selectedAction}</code>
           </p>
         )}
-  
-        <button
-          onClick={fetchStatesAndActions}
-          className="mt-4 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
-        >
-          🔄 Refresh States & Actions
-        </button>
+
       </div>
     );
   }

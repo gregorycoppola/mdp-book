@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import AddRewardForm from '@/components/AddRewardForm';
-import SelectActionPair from '@/components/SelectActionPair';
+
 
 export default function RewardsPage() {
   const params = useParams();
@@ -22,14 +22,6 @@ export default function RewardsPage() {
         onRewardAdded={() => console.log('✅ Reward added')}
       />
 
-      <div className="mt-6">
-        <SelectActionPair
-          mdpId={mdpId}
-          onPairSelected={(s, a) =>
-            console.log(`🎯 Selected pair: (${s}, ${a})`)
-          }
-        />
-      </div>
     </main>
   );
 }
