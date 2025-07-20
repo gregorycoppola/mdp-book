@@ -22,14 +22,6 @@ export default function ActionsPage() {
         onActionAdded={() => console.log('✅ Action added')}
       />
 
-      <div className="mt-6">
-        <SelectActionPair
-          mdpId={mdpId}
-          onPairSelected={(s, a) =>
-            console.log(`🎯 Selected pair: (${s}, ${a})`)
-          }
-        />
-      </div>
     </main>
   );
 }
