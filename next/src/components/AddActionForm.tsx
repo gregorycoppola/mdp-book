@@ -112,15 +112,6 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
             </option>
           ))}
         </select>
-        <button
-          onClick={() => {
-            loadStates();
-            loadActions();
-          }}
-          className="px-2 py-1 bg-gray-700 hover:bg-gray-800 text-white text-sm rounded"
-        >
-          🔄 Refresh
-        </button>
       </div>
 
       <div className="mb-2">

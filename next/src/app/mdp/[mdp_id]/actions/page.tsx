@@ -2,7 +2,6 @@
 
 import { useParams } from 'next/navigation';
 import AddActionForm from '@/components/AddActionForm';
-import SelectActionPair from '@/components/SelectActionPair';
 
 export default function ActionsPage() {
   const params = useParams();
