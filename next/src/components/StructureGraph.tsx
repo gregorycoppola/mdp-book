@@ -24,9 +24,18 @@ interface GraphData {
   transitions: Record<string, Record<string, Transition[]>>;
 }
 
+interface RewardData {
+  [state: string]: {
+    [action: string]: {
+      [next_state: string]: number;
+    };
+  };
+}
+
 export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
   const [solution, setSolution] = useState<SolutionMap>({});
   const [transitions, setTransitions] = useState<GraphData['transitions']>({});
+  const [rewards, setRewards] = useState<RewardData>({});
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -34,19 +43,22 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
       if (!mdpId) return;
 
       try {
-        const [solRes, graphRes] = await Promise.all([
+        const [solRes, graphRes, rewardRes] = await Promise.all([
           fetch(`http://localhost:8000/api/mdp/${mdpId}/solution`),
           fetch(`http://localhost:8000/api/mdp/${mdpId}/graph`),
+          fetch(`http://localhost:8000/api/mdp/${mdpId}/rewards`),
         ]);
 
         const solJson = await solRes.json();
         const graphJson = await graphRes.json();
+        const rewardJson = await rewardRes.json();
 
         if (!solJson.solution) throw new Error(solJson?.error || 'Missing solution');
         if (!graphJson.transitions) throw new Error(graphJson?.error || 'Missing graph transitions');
 
         setSolution(solJson.solution);
         setTransitions(graphJson.transitions);
+        setRewards(rewardJson.rewards || {});
       } catch (err: any) {
         console.error('[SolutionGraph] ❌ Error:', err);
         setError(err.message);
@@ -64,7 +76,6 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
   const edges: any[] = [];
 
   for (const [state, actionMap] of Object.entries(transitions)) {
-    // Add state node if not already present
     const value = solution[state]?.value ?? 0;
     const best_action = solution[state]?.best_action ?? null;
     const label = `${state}\nV=${value.toFixed(2)}${best_action ? `\n→ ${best_action}` : ''}`;
@@ -88,13 +99,12 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
           label: action,
           shape: 'ellipse',
           color: {
-            background: action === best_action ? '#90EE90' : '#ccccff', // highlight best
+            background: action === best_action ? '#90EE90' : '#ccccff',
           },
           font: { color: '#000000' },
         });
       }
 
-      // State → Action
       edges.push({
         id: `${state}->${actionNodeId}`,
         from: state,
@@ -114,13 +124,15 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
           });
         }
 
-        // Action → Next State
+        const reward = rewards?.[state]?.[action]?.[next_state];
+        const rewardLabel = reward !== undefined ? `r=${reward}` : 'r=?';
+
         edges.push({
           id: `${actionNodeId}->${next_state}`,
           from: actionNodeId,
           to: next_state,
           arrows: 'to',
-          label: `${probability}`,
+          label: `p=${probability}, ${rewardLabel}`,
         });
       }
     }
