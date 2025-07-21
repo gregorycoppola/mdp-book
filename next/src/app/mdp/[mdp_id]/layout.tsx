@@ -1,13 +1,13 @@
 import Link from "next/link";
 
-export default function MdpLayout({
+export default async function MdpLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { mdp_id: string };
+  params: Promise<{ mdp_id: string }>;
 }) {
-  const { mdp_id } = params;
+  const { mdp_id } = await params; // ⬅️ REQUIRED in Next 15+
 
   return (
     <>
