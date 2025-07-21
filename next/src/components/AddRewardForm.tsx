@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import SelectActionPair from './SelectActionPair';
+import RewardsRenderComponent from './render/RewardsRenderComponent';
 
 interface Props {
   mdpId: string;
@@ -9,14 +10,16 @@ interface Props {
 }
 
 export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
-  const [sourceState, setSourceState] = useState<string>('');
-  const [action, setAction] = useState<string>('');
-  const [nextState, setNextState] = useState<string>('');
+  const [sourceState, setSourceState] = useState('');
+  const [action, setAction] = useState('');
+  const [nextState, setNextState] = useState('');
   const [availableNextStates, setAvailableNextStates] = useState<string[]>([]);
-  const [reward, setReward] = useState<string>('0.0');
+  const [reward, setReward] = useState('0.0');
+  const [rewards, setRewards] = useState<Record<string, Record<string, Record<string, number>>>>({});
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch transitions to populate nextState dropdown
   useEffect(() => {
     if (!sourceState || !action) {
       setAvailableNextStates([]);
@@ -43,24 +46,32 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
     fetchTransitions();
   }, [sourceState, action, mdpId]);
 
+  // Fetch rewards on mount + refresh
+  const fetchRewards = async () => {
+    try {
+      const res = await fetch(`http://localhost:8000/api/mdp/${mdpId}/rewards`);
+      const json = await res.json();
+      if (json.rewards) {
+        setRewards(json.rewards);
+      }
+    } catch (err) {
+      console.error('❌ Failed to fetch rewards:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchRewards();
+  }, [mdpId]);
+
   const handleSubmit = async () => {
     setMessage(null);
     setError(null);
 
     const trimmedNextState = nextState.trim();
-    const trimmedReward = reward.trim();
-    const parsedReward = parseFloat(trimmedReward);
-
-    console.log('🧪 Submitting reward with:', {
-      sourceState,
-      action,
-      nextState: trimmedNextState,
-      reward: trimmedReward,
-      parsedReward
-    });
+    const parsedReward = parseFloat(reward.trim());
 
     if (!sourceState || !action || !trimmedNextState || isNaN(parsedReward)) {
-      setError('⚠️ Must select a state/action pair, next state, and enter a valid reward');
+      setError('⚠️ Must select a state/action pair, next state, and valid reward');
       return;
     }
 
@@ -78,15 +89,12 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
       });
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Failed to add reward');
 
-      if (!res.ok) {
-        throw new Error(data?.error || 'Failed to add reward');
-      }
-
-      const msg = data.message || `Reward set for (${sourceState}, ${action}, ${trimmedNextState}) = ${parsedReward}`;
-      setMessage(msg);
+      setMessage(data.message || '✅ Reward added');
       setNextState('');
       setReward('0.0');
+      fetchRewards(); // 🔁 Refresh reward view
       onRewardAdded?.();
     } catch (err: any) {
       console.error('❌ [AddRewardForm] Error:', err);
@@ -115,9 +123,7 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
         >
           <option value="">-- Select Next State --</option>
           {availableNextStates.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
+            <option key={s} value={s}>{s}</option>
           ))}
         </select>
       </div>
@@ -142,6 +148,10 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
 
       {message && <p className="mt-2 text-green-400">{message}</p>}
       {error && <p className="mt-2 text-red-400">{error}</p>}
+
+      <div className="mt-10">
+        <RewardsRenderComponent rewards={rewards} />
+      </div>
     </div>
   );
 }
