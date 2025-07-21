@@ -20,11 +20,14 @@ def add_action(mdp_id: str, payload: ActionInput):
         return {"error": "MDP not found"}
 
     if payload.state not in mdp.actions.root:
-        print(f"➕ [add_action] No actions for state '{payload.state}', initializing set")
-        mdp.actions.root[payload.state] = set()
+        print(f"➕ [add_action] No actions for state '{payload.state}', initializing list")
+        mdp.actions.root[payload.state] = []
 
-    mdp.actions.root[payload.state].add(payload.action)
-    save_mdp_to_redis(mdp_id, mdp)  # ✅ Save updated model
+    if payload.action not in mdp.actions.root[payload.state]:
+        mdp.actions.root[payload.state].append(payload.action)
+        print(f"✅ [add_action] Action '{payload.action}' added to state '{payload.state}'")
+    else:
+        print(f"⚠️ [add_action] Action '{payload.action}' already exists for state '{payload.state}'")
 
-    print(f"✅ [add_action] Action '{payload.action}' added to state '{payload.state}'")
+    save_mdp_to_redis(mdp_id, mdp)
     return {"message": f"Action '{payload.action}' added to state '{payload.state}'"}
