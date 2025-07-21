@@ -19,7 +19,6 @@ export default function ViewMDPPage() {
       <h1 className="text-2xl font-bold mb-4">🗂 MDP Viewer</h1>
       <p className="text-green-400 mb-4">MDP ID: {mdp_id}</p>
 
-      <MDPRenderComponent mdpId={mdp_id} />
       <AllActionsList mdpId={mdp_id} />
       <AllTransitionsList mdpId={mdp_id} />
       <RewardsTable
