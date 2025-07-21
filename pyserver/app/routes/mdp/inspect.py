@@ -56,7 +56,17 @@ def get_transitions(mdp_id: str):
     mdp = load_mdp_from_redis(mdp_id)
     if not mdp:
         return {"error": "MDP not found"}
-    return {"transitions": mdp.transitions.root}
+    
+    return {
+        "transitions": {
+            s: {
+                a: [{"next_state": ns, "probability": p} for ns, p in a_map.items()]
+                for a, a_map in s_map.items()
+            }
+            for s, s_map in mdp.transitions.root.items()
+        }
+    }
+
 
 @router.get("/{mdp_id}/rewards")
 def get_rewards(mdp_id: str):
