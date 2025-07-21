@@ -1,25 +1,20 @@
-# pyserver/app/models/mdp_model.py
+from typing import List, Optional
+from collections import OrderedDict
+from pydantic import BaseModel, RootModel, field_validator
 
-from typing import Set, Dict, Optional
-from pydantic import BaseModel, RootModel
+class Actions(RootModel[OrderedDict[str, List[str]]]): pass
+# Preserves order of state keys and actions
 
-class Actions(RootModel[Dict[str, Set[str]]]): pass
+class Transitions(RootModel[OrderedDict[str, OrderedDict[str, OrderedDict[str, float]]]]): pass
 
-class Transitions(RootModel[Dict[str, Dict[str, Dict[str, float]]]]): pass
-# Structure: transitions[state][action][next_state] = probability
+class Rewards(RootModel[OrderedDict[str, OrderedDict[str, OrderedDict[str, float]]]]): pass
 
-class Rewards(RootModel[Dict[str, Dict[str, Dict[str, float]]]]): pass
-# Structure: rewards[state][action] = reward
+class ValueFunction(RootModel[OrderedDict[str, float]]): pass
 
-class ValueFunction(RootModel[Dict[str, float]]): pass
-# Structure: V[state] = value
-
-# models/mdp_model.py
-class Policy(RootModel[Dict[str, Optional[str]]]): pass
-# Structure: policy[state] = action
+class Policy(RootModel[OrderedDict[str, Optional[str]]]): pass
 
 class MDPModel(BaseModel):
-    states: Set[str]
+    states: List[str]
     actions: Actions
     transitions: Transitions
     rewards: Rewards

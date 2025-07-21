@@ -3,6 +3,7 @@
 import redis
 from uuid import uuid4
 from app.models.mdp_model import MDPModel, Actions, Transitions, Rewards, ValueFunction, Policy
+from collections import OrderedDict
 
 # 🔌 Connect to Redis (localhost:6379 assumed)
 r = redis.Redis(host="localhost", port=6379, decode_responses=True)
@@ -21,16 +22,18 @@ def delete_mdp_from_redis(mdp_id: str) -> bool:
     """Deletes the MDP entry from Redis. Returns True if deleted, False otherwise."""
     return r.delete(f"mdp:{mdp_id}") > 0
 
+
 def create_mdp() -> str:
     mdp_id = str(uuid4())
     mdp = MDPModel(
-        states=set(),
-        actions=Actions({}),
-        transitions=Transitions({}),
-        rewards=Rewards({}),
+        states=[],  # ✅ preserve order
+        actions=Actions(OrderedDict()),  # ✅ ordered
+        transitions=Transitions(OrderedDict()),
+        rewards=Rewards(OrderedDict()),
         gamma=1.0,
-        V=ValueFunction({}),
-        policy=Policy({})
+        V=ValueFunction(OrderedDict()),
+        policy=Policy(OrderedDict())
     )
     save_mdp_to_redis(mdp_id, mdp)
     return mdp_id
+
