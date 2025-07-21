@@ -151,3 +151,12 @@ def list_actions(mdp_id, state):
     """List all actions available from a given state in the MDP"""
     result = get(f"{API_PREFIX}/{mdp_id}/actions/{state}")
     click.echo(json.dumps(result, indent=2))
+
+@cli.command("list-transitions")
+@click.argument("mdp_id")
+@click.argument("state")
+@click.argument("action")
+def list_transitions(mdp_id, state, action):
+    """List next states and probabilities from (state, action)"""
+    result = get(f"{API_PREFIX}/{mdp_id}/transitions/{state}/{action}")
+    click.echo(json.dumps(result, indent=2))

@@ -136,3 +136,20 @@ def get_mdp_graph(mdp_id: str):
             for s, s_map in mdp.transitions.root.items()
         }
     }
+
+@router.get("/{mdp_id}/transitions/{state}/{action}")
+def get_transitions_for_action(mdp_id: str, state: str, action: str):
+    """Return list of next_states and probabilities for a given (state, action)"""
+    mdp = load_mdp_from_redis(mdp_id)
+    if not mdp:
+        return {"error": "MDP not found"}
+    
+    try:
+        action_map = mdp.transitions[state][action]
+        transitions = [
+            {"next_state": next_state, "probability": prob}
+            for next_state, prob in action_map.items()
+        ]
+        return {"transitions": transitions}
+    except KeyError:
+        return {"transitions": []}  # Gracefully return empty list if not found
