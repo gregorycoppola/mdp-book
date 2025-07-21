@@ -22,9 +22,10 @@ def add_state(mdp_id: str, state: StateInput):
         print(f"⚠️ [add_state] State '{state.name}' already exists in MDP {mdp_id}")
     else:
         print(f"➕ [add_state] Adding new state '{state.name}' to MDP {mdp_id}")
-        mdp.states.add(state.name)
-        save_mdp_to_redis(mdp_id, mdp)  # ✅ persist change
+        mdp.states.append(state.name)  # ✅ append to list to preserve order
+        save_mdp_to_redis(mdp_id, mdp)
 
-    print(f"✅ [add_state] State added. Current states in MDP {mdp_id}: {sorted(mdp.states)}")
+    print(f"✅ [add_state] State added. Current states in MDP {mdp_id}: {mdp.states}")
 
     return {"message": f"State {state.name} added"}
+
