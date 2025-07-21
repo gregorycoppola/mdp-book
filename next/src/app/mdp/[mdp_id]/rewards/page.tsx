@@ -1,13 +1,14 @@
 'use client';
 
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import AddRewardForm from '@/components/AddRewardForm';
 import RewardsTable from '@/components/RewardsTable';
-
 
 export default function RewardsPage() {
   const params = useParams();
   const mdpId = params?.mdp_id as string;
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   if (!mdpId) {
     return <p className="text-red-400">❌ MDP ID not found in URL</p>;
@@ -20,11 +21,13 @@ export default function RewardsPage() {
 
       <AddRewardForm
         mdpId={mdpId}
-        onRewardAdded={() => console.log('✅ Reward added')}
+        onRewardAdded={() => setRefreshTrigger(Date.now())}
       />
 
-      <RewardsTable mdpId={mdpId} />
-
+      <RewardsTable
+        mdpId={mdpId}
+        refreshTrigger={refreshTrigger}
+      />
     </main>
   );
 }
