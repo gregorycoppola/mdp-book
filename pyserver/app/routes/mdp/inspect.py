@@ -44,6 +44,14 @@ def get_states(mdp_id: str):
         return {"error": "MDP not found"}
     return {"states": mdp.states}
 
+@router.get("/{mdp_id}/actions")
+def get_actions(mdp_id: str):
+    mdp = load_mdp_from_redis(mdp_id)
+    if not mdp:
+        return {"error": "MDP not found"}
+    return {"actions": mdp.actions.root}
+
+
 @router.get("/{mdp_id}/actions/{state}")
 def get_actions_for_state(mdp_id: str, state: str):
     mdp = load_mdp_from_redis(mdp_id)
