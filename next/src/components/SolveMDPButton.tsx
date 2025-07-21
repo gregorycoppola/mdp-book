@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+
 interface Props {
   mdpId: string;
   onSolved?: () => void;
