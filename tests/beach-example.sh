@@ -18,37 +18,37 @@ for state in start beach_sun beach_rain cafe end; do
   mdp add-state "$mdp_id" "$state"
 done
 
-# Actions
+# Actions — unique names from start and for returns
 echo "🎯 Adding actions"
-mdp add-action "$mdp_id" start beach
-mdp add-action "$mdp_id" start cafe
-mdp add-action "$mdp_id" beach_sun go
-mdp add-action "$mdp_id" beach_rain go
-mdp add-action "$mdp_id" cafe go
+mdp add-action "$mdp_id" start go_beach
+mdp add-action "$mdp_id" start go_cafe
+mdp add-action "$mdp_id" beach_sun home_from_sun
+mdp add-action "$mdp_id" beach_rain home_from_rain
+mdp add-action "$mdp_id" cafe home_from_cafe
 
-# Transitions (no probabilities set here)
+# Transitions
 echo "🔁 Adding transitions"
-mdp add-transition "$mdp_id" start beach beach_sun
-mdp add-transition "$mdp_id" start beach beach_rain
-mdp add-transition "$mdp_id" start cafe cafe
-mdp add-transition "$mdp_id" beach_sun go end
-mdp add-transition "$mdp_id" beach_rain go end
-mdp add-transition "$mdp_id" cafe go end
+mdp add-transition "$mdp_id" start go_beach beach_sun
+mdp add-transition "$mdp_id" start go_beach beach_rain
+mdp add-transition "$mdp_id" start go_cafe cafe
+mdp add-transition "$mdp_id" beach_sun home_from_sun end
+mdp add-transition "$mdp_id" beach_rain home_from_rain end
+mdp add-transition "$mdp_id" cafe home_from_cafe end
 
-# Set transition probabilities
+# Transition probabilities
 echo "🎚️ Setting transition probabilities"
-mdp set-transition-probability "$mdp_id" start beach beach_sun 0.9
-mdp set-transition-probability "$mdp_id" start beach beach_rain 0.1
-mdp set-transition-probability "$mdp_id" start cafe cafe 1.0
-mdp set-transition-probability "$mdp_id" beach_sun go end 1.0
-mdp set-transition-probability "$mdp_id" beach_rain go end 1.0
-mdp set-transition-probability "$mdp_id" cafe go end 1.0
+mdp set-transition-probability "$mdp_id" start go_beach beach_sun 0.9
+mdp set-transition-probability "$mdp_id" start go_beach beach_rain 0.1
+mdp set-transition-probability "$mdp_id" start go_cafe cafe 1.0
+mdp set-transition-probability "$mdp_id" beach_sun home_from_sun end 1.0
+mdp set-transition-probability "$mdp_id" beach_rain home_from_rain end 1.0
+mdp set-transition-probability "$mdp_id" cafe home_from_cafe end 1.0
 
 # Rewards
 echo "💰 Adding rewards"
-mdp add-reward "$mdp_id" beach_sun go end 10.0
-mdp add-reward "$mdp_id" beach_rain go end 0.0
-mdp add-reward "$mdp_id" cafe go end 5.0
+mdp add-reward "$mdp_id" beach_sun home_from_sun end 10.0
+mdp add-reward "$mdp_id" beach_rain home_from_rain end 0.0
+mdp add-reward "$mdp_id" cafe home_from_cafe end 5.0
 
 # Solve
 echo "🧠 Solving MDP..."
@@ -65,4 +65,3 @@ mdp get-values "$mdp_id"
 # Inspect solution
 echo "🔍 Solution overview:"
 mdp inspect "$mdp_id"
-
