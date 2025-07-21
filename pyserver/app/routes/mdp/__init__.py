@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from . import base, state, action, transition, reward, gamma, solve, policy, value_function, inspect, reset
+from . import base, state, action, transition, reward, gamma, solve, policy, value_function, inspect, reset, probability
 
 router = APIRouter()
 router.include_router(base.router)
@@ -13,3 +13,4 @@ router.include_router(policy.router)
 router.include_router(value_function.router)
 router.include_router(inspect.router)
 router.include_router(reset.router)
+router.include_router(probability.router)
