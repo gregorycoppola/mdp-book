@@ -143,3 +143,11 @@ def list_states(mdp_id):
     """List all states in the MDP"""
     result = get(f"{API_PREFIX}/{mdp_id}/states")
     click.echo(json.dumps(result, indent=2))
+
+@cli.command("list-actions")
+@click.argument("mdp_id")
+@click.argument("state")
+def list_actions(mdp_id, state):
+    """List all actions available from a given state in the MDP"""
+    result = get(f"{API_PREFIX}/{mdp_id}/actions/{state}")
+    click.echo(json.dumps(result, indent=2))
