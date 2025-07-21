@@ -67,6 +67,7 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
         label: `${state}\nV=${value.toFixed(2)}${best_action ? `\n→ ${best_action}` : ''}`,
         shape: 'box',
         font: { align: 'left' },
+        color: { background: '#ADD8E6' }, // Light blue for states
       };
       nodeMap.set(state, node);
       console.log('    ✅ Added state node:', node);
@@ -79,6 +80,7 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
           label: best_action,
           shape: 'ellipse',
           font: { align: 'left' },
+          color: { background: '#90EE90' }, // Light green for actions
         };
         nodeMap.set(best_action, actionNode);
         console.log('    ✅ Added action node:', actionNode);
