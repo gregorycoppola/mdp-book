@@ -37,7 +37,7 @@ def add_transition(mdp_id: str, transition: TransitionInput):
     mdp.transitions.root \
         .setdefault(transition.state, {}) \
         .setdefault(transition.action, {}) \
-        .setdefault(transition.next_state, None)
+        .setdefault(transition.next_state, 0.0)
 
     save_mdp_to_redis(mdp_id, mdp)
     print(f"✅ [add_transition] Added ({transition.state}, {transition.action}) -> {transition.next_state}")
