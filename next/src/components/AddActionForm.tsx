@@ -31,7 +31,6 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
         throw new Error(data?.error || 'Failed to load states');
       }
     } catch (err: any) {
-      console.error('❌ [AddActionForm] loadStates failed:', err);
       setError(err.message);
     }
   };
@@ -47,56 +46,47 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
         throw new Error(data?.error || 'Failed to load actions');
       }
     } catch (err: any) {
-      console.error('❌ [AddActionForm] loadActions failed:', err);
       setError(err.message);
     }
   };
 
-  // 🔁 Load on mount
   useEffect(() => {
     loadStates();
     loadActions();
   }, [mdpId]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault(); // prevent page reload
     setMessage(null);
     setError(null);
 
-    if (!selectedState || !actionName) {
+    if (!selectedState || !actionName.trim()) {
       setError('⚠️ Please select a state and enter an action name');
       return;
     }
 
     try {
-      const url = `http://localhost:8000/api/mdp/${mdpId}/action`;
-      const res = await fetch(url, {
+      const res = await fetch(`http://localhost:8000/api/mdp/${mdpId}/action`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          state: selectedState,
-          action: actionName,
-        }),
+        body: JSON.stringify({ state: selectedState, action: actionName }),
       });
 
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data?.error || 'Failed to add action');
-      }
+      if (!res.ok) throw new Error(data?.error || 'Failed to add action');
 
-      const msg = data.message || `Action "${actionName}" added to "${selectedState}"`;
-      setMessage(msg);
+      setMessage(data.message || `Action "${actionName}" added to "${selectedState}"`);
       setActionName('');
-
       onActionAdded?.();
-      await loadActions(); // Refresh actions after successful addition
+      await loadActions();
     } catch (err: any) {
       setError(`❌ ${err.message}`);
     }
   };
 
   return (
-    <div className="mt-6">
+    <form onSubmit={handleSubmit} className="mt-6">
       <h2 className="text-xl font-semibold mb-2">🎯 Add Action</h2>
 
       <div className="mb-2 flex items-center gap-2">
@@ -125,7 +115,7 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
       </div>
 
       <button
-        onClick={handleSubmit}
+        type="submit"
         className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white"
       >
         Add Action
@@ -134,9 +124,10 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
       {message && <p className="mt-2 text-green-400">{message}</p>}
       {error && <p className="mt-2 text-red-400">{error}</p>}
 
-      {/* 🔎 Show actions for selected state */}
       <div className="mt-4 text-sm text-white">
-        <h3 className="font-semibold">Actions for <code>{selectedState}</code>:</h3>
+        <h3 className="font-semibold">
+          Actions for <code>{selectedState}</code>:
+        </h3>
         <ul className="list-disc list-inside mt-1">
           {(actionsByState[selectedState] || []).map((a, i) => (
             <li key={i}>{a}</li>
@@ -144,6 +135,6 @@ export default function AddActionForm({ mdpId, onActionAdded }: Props) {
           {actionsByState[selectedState]?.length === 0 && <li>(none yet)</li>}
         </ul>
       </div>
-    </div>
+    </form>
   );
 }
