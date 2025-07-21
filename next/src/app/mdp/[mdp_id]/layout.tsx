@@ -20,6 +20,7 @@ export default async function MdpLayout({
         <Link href={`/mdp/${mdp_id}/probabilities`} className="hover:underline">📊 Probabilities</Link>
         <Link href={`/mdp/${mdp_id}/solve`} className="hover:underline">📈 Solve</Link>
         <Link href={`/mdp/${mdp_id}/mdp`} className="hover:underline">🗂 View MDP</Link>
+        <Link href={`/mdp/${mdp_id}/graph`} className="hover:underline">🧠 Solution Graph</Link>
       </nav>
       {children}
     </>
