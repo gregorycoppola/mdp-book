@@ -61,3 +61,7 @@ mdp show-mdp "$mdp_id"
 # Get values
 echo "\U0001F4C8 Value function:"
 mdp get-values "$mdp_id"
+
+# Inspect solution
+echo "🔍 Solution overview:"
+mdp inspect "$mdp_id"

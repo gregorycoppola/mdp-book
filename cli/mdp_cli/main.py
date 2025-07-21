@@ -104,3 +104,10 @@ def get_values(mdp_id):
 def get_policy(mdp_id):
     result = get(f"{API_PREFIX}/{mdp_id}/policy")
     click.echo(json.dumps(result))
+
+@cli.command("inspect")
+@click.argument("mdp_id")
+def inspect_solution(mdp_id):
+    """Inspect the solved MDP (state → value + best action)"""
+    result = get(f"{API_PREFIX}/{mdp_id}/solution")
+    click.echo(json.dumps(result, indent=2))
