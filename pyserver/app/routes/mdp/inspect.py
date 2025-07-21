@@ -145,11 +145,11 @@ def get_transitions_for_action(mdp_id: str, state: str, action: str):
         return {"error": "MDP not found"}
     
     try:
-        action_map = mdp.transitions[state][action]
+        action_map = mdp.transitions.root[state][action]
         transitions = [
             {"next_state": next_state, "probability": prob}
             for next_state, prob in action_map.items()
         ]
         return {"transitions": transitions}
     except KeyError:
-        return {"transitions": []}  # Gracefully return empty list if not found
+        return {"transitions": []}
