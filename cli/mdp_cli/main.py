@@ -39,19 +39,18 @@ def add_action(mdp_id, state, action_name):
 @click.argument("state_name")
 @click.argument("action_name")
 @click.argument("next_state_name")
-@click.argument("probability", type=float)
-def add_transition(mdp_id, state_name, action_name, next_state_name, probability):
-    """Add a transition to an existing MDP"""
+def add_transition(mdp_id, state_name, action_name, next_state_name):
+    """Add a transition (probability will be computed automatically later)"""
     result = post(
         f"{API_PREFIX}/{mdp_id}/transition",
         json={
             "state": state_name,
             "action": action_name,
             "next_state": next_state_name,
-            "probability": probability,
         },
     )
     click.echo(json.dumps(result))
+
 
 @cli.command("show-mdp")
 @click.argument("mdp_id")
