@@ -120,11 +120,14 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
   };
 
   console.log('[SolutionGraph] Rendering graph with options:', options);
-
   return (
     <div className="mt-10">
       <h2 className="text-xl font-semibold text-white mb-2">📈 MDP Solution Graph</h2>
-      <Graph graph={graph} options={options} />
+      <Graph
+        key={mdpId + '-' + Object.keys(solution).join(',')}
+        graph={graph}
+        options={options}
+      />
     </div>
   );
 }
