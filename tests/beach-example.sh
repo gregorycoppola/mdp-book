@@ -46,12 +46,12 @@ mdp set-transition-probability "$mdp_id" cafe home_from_cafe end 1.0
 
 # Rewards (updated)
 echo "💰 Adding rewards"
-mdp add-reward "$mdp_id" start go_beach beach_sun 10.0
+mdp add-reward "$mdp_id" start go_beach beach_sun 0.0
 mdp add-reward "$mdp_id" start go_beach beach_rain 0.0
 mdp add-reward "$mdp_id" start go_cafe cafe 0.0
-mdp add-reward "$mdp_id" beach_sun home_from_sun end 0.0
+mdp add-reward "$mdp_id" beach_sun home_from_sun end 10.0
 mdp add-reward "$mdp_id" beach_rain home_from_rain end 0.0
-mdp add-reward "$mdp_id" cafe home_from_cafe end 0.0
+mdp add-reward "$mdp_id" cafe home_from_cafe end 5.0
 
 # Solve
 echo "🧠 Solving MDP..."
