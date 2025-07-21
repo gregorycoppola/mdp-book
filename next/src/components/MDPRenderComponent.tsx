@@ -2,13 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import StatesRenderComponent from './render/StatesRenderComponent';
-import ActionsRenderComponent from './render/ActionsRenderComponent';
-import TransitionsRenderComponent from './render/TransitionsRenderComponent';
-import RewardsRenderComponent from './render/RewardsRenderComponent';
-import GammaRenderComponent from './render/GammaRenderComponent';
-import ValueFunctionRenderComponent from './render/ValueFunctionRenderComponent';
-import PolicyRenderComponent from './render/PolicyRenderComponent';
+import AllStatesList from './AllStatesList';
 
 interface Props {
   mdpId: string;
@@ -46,13 +40,9 @@ export default function MDPRenderComponent({ mdpId }: Props) {
 
       {data && (
         <div className="space-y-6 text-white">
-          <StatesRenderComponent states={data.states} />
-          <ActionsRenderComponent actions={data.actions} />
-          <TransitionsRenderComponent transitions={data.transitions} />
-          <RewardsRenderComponent rewards={data.rewards} />
-          <GammaRenderComponent gamma={data.gamma} />
-          <ValueFunctionRenderComponent V={data.V} />
-          <PolicyRenderComponent policy={data.policy} />
+          <AllStatesList
+            mdpId={mdpId}
+          />
         </div>
       )}
     </div>

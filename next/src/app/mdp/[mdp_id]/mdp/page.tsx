@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import MDPRenderComponent from '@/components/MDPRenderComponent';
+import AllActionsList from '@/components/AllActionsList';
 
 export default function ViewMDPPage() {
   const { mdp_id } = useParams<{ mdp_id: string }>();
@@ -16,6 +17,7 @@ export default function ViewMDPPage() {
       <p className="text-green-400 mb-4">MDP ID: {mdp_id}</p>
 
       <MDPRenderComponent mdpId={mdp_id} />
+     <AllActionsList mdpId={mdp_id} />
     </main>
   );
 }
