@@ -1,13 +1,8 @@
 'use client';
 
 import StructureGraph from '@/components/StructureGraph';
-import dynamic from 'next/dynamic';
 import { useParams } from 'next/navigation';
 
-// Dynamically import SolutionGraph with SSR disabled
-const SolutionGraph = dynamic(() => import('@/components/SolutionGraph'), {
-  ssr: false,
-});
 
 export default function SolutionGraphPage() {
   const { mdp_id } = useParams<{ mdp_id: string }>();
@@ -21,7 +16,6 @@ export default function SolutionGraphPage() {
       <h1 className="text-2xl font-bold mb-4">📈 MDP Solution Graph</h1>
       <p className="text-green-400 mb-6">MDP ID: {mdp_id}</p>
       <StructureGraph mdpId={mdp_id} />   
-      {/* <SolutionGraph mdpId={mdp_id} /> */}
     </main>
   );
 }
