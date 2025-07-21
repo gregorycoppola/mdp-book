@@ -33,7 +33,7 @@ interface RewardData {
 }
 
 export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
-  const [solution, setSolution] = useState<SolutionMap>({});
+  const [solution, setSolution] = useState<SolutionMap | null>(null);
   const [transitions, setTransitions] = useState<GraphData['transitions']>({});
   const [rewards, setRewards] = useState<RewardData>({});
   const [error, setError] = useState<string | null>(null);
@@ -53,14 +53,18 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
         const graphJson = await graphRes.json();
         const rewardJson = await rewardRes.json();
 
-        if (!solJson.solution) throw new Error(solJson?.error || 'Missing solution');
         if (!graphJson.transitions) throw new Error(graphJson?.error || 'Missing graph transitions');
-
-        setSolution(solJson.solution);
         setTransitions(graphJson.transitions);
         setRewards(rewardJson.rewards || {});
+
+        if (solJson.solution) {
+          setSolution(solJson.solution);
+        } else {
+          console.warn('[StructureGraph] ⚠️ No solution found. Skipping value/policy annotations.');
+          setSolution(null);
+        }
       } catch (err: any) {
-        console.error('[SolutionGraph] ❌ Error:', err);
+        console.error('[StructureGraph] ❌ Error:', err);
         setError(err.message);
       }
     };
@@ -76,31 +80,37 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
   const edges: any[] = [];
 
   for (const [state, actionMap] of Object.entries(transitions)) {
-    const value = solution[state]?.value ?? 0;
-    const best_action = solution[state]?.best_action ?? null;
-    const label = `${state}\nV=${value.toFixed(2)}${best_action ? `\n→ ${best_action}` : ''}`;
+    let label = state;
+    const stateColor = '#ADD8E6';
+
+    if (solution && solution[state]) {
+      const { value, best_action } = solution[state];
+      label += `\nV=${value.toFixed(2)}`;
+      if (best_action) {
+        label += `\n→ ${best_action}`;
+      }
+    }
 
     if (!nodeMap.has(state)) {
       nodeMap.set(state, {
         id: state,
         label,
         shape: 'box',
-        color: { background: '#ADD8E6' },
+        color: { background: stateColor },
         font: { align: 'left', color: '#ffffff' },
       });
     }
 
     for (const [action, targets] of Object.entries(actionMap)) {
       const actionNodeId = `${state}_${action}`;
+      const isBest = solution?.[state]?.best_action === action;
 
       if (!nodeMap.has(actionNodeId)) {
         nodeMap.set(actionNodeId, {
           id: actionNodeId,
           label: action,
           shape: 'ellipse',
-          color: {
-            background: action === best_action ? '#90EE90' : '#ccccff',
-          },
+          color: { background: isBest ? '#90EE90' : '#ccccff' },
           font: { color: '#000000' },
         });
       }
@@ -179,7 +189,7 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
     <div className="mt-10">
       <h2 className="text-xl font-semibold text-white mb-2">📈 MDP Solution Graph</h2>
       <Graph
-        key={mdpId + '-' + Object.keys(solution).join(',')}
+        key={mdpId + '-' + Object.keys(transitions).join(',')}
         graph={graph}
         options={options}
       />
