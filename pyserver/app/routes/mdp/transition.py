@@ -5,16 +5,14 @@ import logging
 
 from app.core.mdp_store import load_mdp_from_redis, save_mdp_to_redis
 
-# ✅ define router BEFORE using it
 router = APIRouter()
-
 logger = logging.getLogger(__name__)
 
+# 🚫 No longer includes probability
 class TransitionInput(BaseModel):
     state: str
     action: str
     next_state: str
-    probability: float
 
 @router.post("/{mdp_id}/transition")
 def add_transition(mdp_id: str, transition: TransitionInput):
@@ -25,29 +23,24 @@ def add_transition(mdp_id: str, transition: TransitionInput):
         return JSONResponse(status_code=404, content={"error": "MDP not found"})
 
     if transition.state not in mdp.states:
-        logger.warning(f"[add_transition] Invalid source state: {transition.state}")
         return JSONResponse(status_code=400, content={"error": f"State '{transition.state}' does not exist"})
 
     if transition.next_state not in mdp.states:
-        logger.warning(f"[add_transition] Invalid next_state: {transition.next_state}")
         return JSONResponse(status_code=400, content={"error": f"Next state '{transition.next_state}' does not exist"})
 
-    actions_for_state = mdp.actions.root.get(transition.state, [])
-    if transition.action not in actions_for_state:
-        logger.warning(f"[add_transition] Invalid action '{transition.action}' for state '{transition.state}'")
-        return JSONResponse(
-            status_code=400,
-            content={"error": f"Action '{transition.action}' not defined for state '{transition.state}'"}
-        )
+    if transition.action not in mdp.actions.root.get(transition.state, set()):
+        return JSONResponse(status_code=400, content={
+            "error": f"Action '{transition.action}' not defined for state '{transition.state}'"
+        })
 
-    # ✅ Maintain insertion order by not reassigning dicts unnecessarily
-    state_transitions = mdp.transitions.root.setdefault(transition.state, {})
-    action_transitions = state_transitions.setdefault(transition.action, {})
-
-    action_transitions[transition.next_state] = transition.probability
+    # ✅ Initialize transition slot without setting probability
+    mdp.transitions.root \
+        .setdefault(transition.state, {}) \
+        .setdefault(transition.action, {}) \
+        .setdefault(transition.next_state, None)
 
     save_mdp_to_redis(mdp_id, mdp)
-    print(f"✅ [add_transition] {transition.state} --{transition.action}/{transition.probability}--> {transition.next_state}")
+    print(f"✅ [add_transition] Added ({transition.state}, {transition.action}) -> {transition.next_state}")
     return {
-        "message": f"Transition added: ({transition.state}, {transition.action}) -> {transition.next_state} [{transition.probability}]"
+        "message": f"Transition added: ({transition.state}, {transition.action}) -> {transition.next_state}"
     }
