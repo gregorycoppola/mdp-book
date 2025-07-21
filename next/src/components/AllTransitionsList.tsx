@@ -54,7 +54,7 @@ export default function AllTransitionsList({ mdpId, refreshTrigger }: Props) {
                   <ul className="ml-4 list-none">
                     {outcomes.map((t, idx) => (
                       <li key={idx} className="text-neutral-300">
-                        → {t.next_state} <span className="text-yellow-300">(p={t.probability.toFixed(3)})</span>
+                        → {t.next_state}
                       </li>
                     ))}
                   </ul>
