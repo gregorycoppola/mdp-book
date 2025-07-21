@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SelectActionPair from './SelectActionPair';
 
 interface Props {
@@ -12,18 +12,45 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
   const [sourceState, setSourceState] = useState<string>('');
   const [action, setAction] = useState<string>('');
   const [nextState, setNextState] = useState<string>('');
+  const [availableNextStates, setAvailableNextStates] = useState<string[]>([]);
   const [reward, setReward] = useState<string>('0.0');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!sourceState || !action) {
+      setAvailableNextStates([]);
+      return;
+    }
+
+    const fetchTransitions = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/api/mdp/${mdpId}`);
+        const json = await res.json();
+        const transitions = json.transitions?.[sourceState]?.[action];
+        if (Array.isArray(transitions)) {
+          const nexts = transitions.map((t: any) => t.next_state);
+          setAvailableNextStates(nexts);
+        } else {
+          setAvailableNextStates([]);
+        }
+      } catch (err) {
+        console.error("❌ Error fetching transitions:", err);
+        setAvailableNextStates([]);
+      }
+    };
+
+    fetchTransitions();
+  }, [sourceState, action, mdpId]);
+
   const handleSubmit = async () => {
     setMessage(null);
     setError(null);
-  
+
     const trimmedNextState = nextState.trim();
     const trimmedReward = reward.trim();
     const parsedReward = parseFloat(trimmedReward);
-  
+
     console.log('🧪 Submitting reward with:', {
       sourceState,
       action,
@@ -31,12 +58,12 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
       reward: trimmedReward,
       parsedReward
     });
-  
+
     if (!sourceState || !action || !trimmedNextState || isNaN(parsedReward)) {
       setError('⚠️ Must select a state/action pair, next state, and enter a valid reward');
       return;
     }
-  
+
     try {
       const url = `http://localhost:8000/api/mdp/${mdpId}/reward`;
       const res = await fetch(url, {
@@ -49,13 +76,13 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
           reward: parsedReward,
         }),
       });
-  
+
       const data = await res.json();
-  
+
       if (!res.ok) {
         throw new Error(data?.error || 'Failed to add reward');
       }
-  
+
       const msg = data.message || `Reward set for (${sourceState}, ${action}, ${trimmedNextState}) = ${parsedReward}`;
       setMessage(msg);
       setNextState('');
@@ -66,7 +93,6 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
       setError(`❌ ${err.message}`);
     }
   };
-  
 
   return (
     <div className="mt-6">
@@ -82,13 +108,18 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
 
       <div className="mb-3">
         <label className="block text-white mt-4 mb-1">Next State:</label>
-        <input
-          type="text"
+        <select
           value={nextState}
           onChange={(e) => setNextState(e.target.value)}
-          placeholder="e.g. sunny-beach"
           className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded w-full"
-        />
+        >
+          <option value="">-- Select Next State --</option>
+          {availableNextStates.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="mb-3">
