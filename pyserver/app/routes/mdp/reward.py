@@ -22,7 +22,7 @@ def add_reward(mdp_id: str, reward_input: RewardInput):
         print(f"❌ [add_reward] MDP not found for id={mdp_id}")
         return {"error": "MDP not found"}
 
-    # 🧠 Validation (optional but helpful for debug)
+    # ✅ Validate inputs
     if reward_input.state not in mdp.states:
         return {"error": f"State '{reward_input.state}' not found in MDP"}
     if reward_input.next_state not in mdp.states:
@@ -30,10 +30,11 @@ def add_reward(mdp_id: str, reward_input: RewardInput):
     if reward_input.action not in mdp.actions.root.get(reward_input.state, set()):
         return {"error": f"Action '{reward_input.action}' not defined for state '{reward_input.state}'"}
 
-    # ✅ Store reward
-    mdp.rewards.root \
-        .setdefault(reward_input.state, {}) \
-        .setdefault(reward_input.action, {})[reward_input.next_state] = reward_input.reward
+    # ✅ Maintain insertion order by avoiding full reassignments
+    state_rewards = mdp.rewards.root.setdefault(reward_input.state, {})
+    action_rewards = state_rewards.setdefault(reward_input.action, {})
+
+    action_rewards[reward_input.next_state] = reward_input.reward
 
     save_mdp_to_redis(mdp_id, mdp)
     print(f"✅ [add_reward] Reward set for ({reward_input.state}, {reward_input.action}, {reward_input.next_state}) = {reward_input.reward}")
