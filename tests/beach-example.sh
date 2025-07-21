@@ -1,9 +1,9 @@
 #!/bin/bash
 set -euo pipefail
 
-# beach-weather.sh
+# beach-example.sh
 # Models a decision between beach (risky) and cafe (safe)
-# Beach can lead to beach_sun (10 reward) or beach_rain (0 reward)
+# Only reward is if beach leads to sun
 
 echo "📦 Creating MDP..."
 create_out=$(mdp create-mdp --gamma 1.0)
@@ -18,7 +18,7 @@ for state in start beach_sun beach_rain cafe end; do
   mdp add-state "$mdp_id" "$state"
 done
 
-# Actions — unique names from start and for returns
+# Actions
 echo "🎯 Adding actions"
 mdp add-action "$mdp_id" start go_beach
 mdp add-action "$mdp_id" start go_cafe
@@ -44,11 +44,14 @@ mdp set-transition-probability "$mdp_id" beach_sun home_from_sun end 1.0
 mdp set-transition-probability "$mdp_id" beach_rain home_from_rain end 1.0
 mdp set-transition-probability "$mdp_id" cafe home_from_cafe end 1.0
 
-# Rewards
+# Rewards (updated)
 echo "💰 Adding rewards"
-mdp add-reward "$mdp_id" beach_sun home_from_sun end 10.0
+mdp add-reward "$mdp_id" start go_beach beach_sun 10.0
+mdp add-reward "$mdp_id" start go_beach beach_rain 0.0
+mdp add-reward "$mdp_id" start go_cafe cafe 0.0
+mdp add-reward "$mdp_id" beach_sun home_from_sun end 0.0
 mdp add-reward "$mdp_id" beach_rain home_from_rain end 0.0
-mdp add-reward "$mdp_id" cafe home_from_cafe end 5.0
+mdp add-reward "$mdp_id" cafe home_from_cafe end 0.0
 
 # Solve
 echo "🧠 Solving MDP..."
