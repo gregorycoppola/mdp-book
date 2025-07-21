@@ -1,11 +1,14 @@
 'use client';
 
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import AddActionForm from '@/components/AddActionForm';
+import AllActionsList from '@/components/AllActionsList';
 
 export default function ActionsPage() {
   const params = useParams();
   const mdpId = params?.mdp_id as string;
+  const [refreshKey, setRefreshKey] = useState(0);
 
   if (!mdpId) {
     return <p className="text-red-400">❌ MDP ID not found in URL</p>;
@@ -18,9 +21,13 @@ export default function ActionsPage() {
 
       <AddActionForm
         mdpId={mdpId}
-        onActionAdded={() => console.log('✅ Action added')}
+        onActionAdded={() => {
+          console.log('✅ Action added');
+          setRefreshKey((prev) => prev + 1); // 🔁 trigger AllActionsList refresh
+        }}
       />
 
+      <AllActionsList mdpId={mdpId} refreshTrigger={refreshKey} />
     </main>
   );
 }
