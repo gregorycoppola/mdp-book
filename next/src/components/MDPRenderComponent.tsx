@@ -40,12 +40,6 @@ export default function MDPRenderComponent({ mdpId }: Props) {
   return (
     <div className="mt-6">
       <h2 className="text-2xl font-bold text-white mb-4">📊 Full MDP View</h2>
-      <button
-        onClick={loadMDP}
-        className="mb-4 px-3 py-1 bg-gray-700 hover:bg-gray-800 text-white rounded"
-      >
-        🔄 Refresh
-      </button>
 
       {error && <p className="text-red-400">Error: {error}</p>}
       {!data && !error && <p className="text-white">Loading...</p>}
