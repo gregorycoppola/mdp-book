@@ -80,74 +80,78 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
   const edges: any[] = [];
 
   console.log({solution});
-  for (const [state, actionMap] of Object.entries(transitions)) {
-    let label = state;
-    const stateColor = '#ADD8E6';
-
-    if (solution && solution[state]) {
-      const { value, best_action } = solution[state];
-      label += `\nV=${value.toFixed(2)}`;
-      if (best_action) {
-        label += `\n→ ${best_action}`;
-      }
-    }
-
-    if (!nodeMap.has(state)) {
-      nodeMap.set(state, {
-        id: state,
-        label,
-        shape: 'box',
-        color: { background: stateColor },
-        font: { align: 'left', color: '#ffffff' },
-      });
-    }
-
-    for (const [action, targets] of Object.entries(actionMap)) {
-      const actionNodeId = `${state}_${action}`;
-      const isBest = solution?.[state]?.best_action === action;
-
-      if (!nodeMap.has(actionNodeId)) {
-        nodeMap.set(actionNodeId, {
-          id: actionNodeId,
-          label: action,
-          shape: 'ellipse',
-          color: { background: isBest ? '#90EE90' : '#ccccff' },
-          font: { color: '#000000' },
-        });
-      }
-
-      edges.push({
-        id: `${state}->${actionNodeId}`,
-        from: state,
-        to: actionNodeId,
-        arrows: 'to',
-        label: '',
-      });
-
-      for (const { next_state, probability } of targets) {
-        if (!nodeMap.has(next_state)) {
-          nodeMap.set(next_state, {
-            id: next_state,
-            label: next_state,
-            shape: 'box',
-            color: { background: '#D3D3D3' },
-            font: { color: '#ffffff' },
-          });
-        }
-
-        const reward = rewards?.[state]?.[action]?.[next_state];
-        const rewardLabel = reward !== undefined ? `r=${reward}` : 'r=?';
-
-        edges.push({
-          id: `${actionNodeId}->${next_state}`,
-          from: actionNodeId,
-          to: next_state,
-          arrows: 'to',
-          label: `p=${probability}, ${rewardLabel}`,
-        });
-      }
+// Step 1: Collect all unique states (from source + targets)
+const allStates = new Set<string>();
+for (const [state, actionMap] of Object.entries(transitions)) {
+  allStates.add(state);
+  for (const targets of Object.values(actionMap)) {
+    for (const { next_state } of targets) {
+      allStates.add(next_state);
     }
   }
+}
+
+// Step 2: Add state nodes with solution info
+for (const state of allStates) {
+  let label = state;
+  const stateColor = state === 'end' ? '#D3D3D3' : '#ADD8E6';
+
+  if (solution && solution[state]) {
+    const { value, best_action } = solution[state];
+    label += `\nV=${value.toFixed(2)}`;
+    if (best_action !== null) {
+      label += `\n→ ${best_action}`;
+    }
+  }
+
+  nodeMap.set(state, {
+    id: state,
+    label,
+    shape: 'box',
+    color: { background: stateColor },
+    font: { align: 'left', color: '#ffffff' },
+  });
+}
+
+// Step 3: Add action nodes and edges
+for (const [state, actionMap] of Object.entries(transitions)) {
+  for (const [action, targets] of Object.entries(actionMap)) {
+    const actionNodeId = `${state}_${action}`;
+    const isBest = solution?.[state]?.best_action === action;
+
+    if (!nodeMap.has(actionNodeId)) {
+      nodeMap.set(actionNodeId, {
+        id: actionNodeId,
+        label: action,
+        shape: 'ellipse',
+        color: { background: isBest ? '#90EE90' : '#ccccff' },
+        font: { color: '#000000' },
+      });
+    }
+
+    edges.push({
+      id: `${state}->${actionNodeId}`,
+      from: state,
+      to: actionNodeId,
+      arrows: 'to',
+      label: '',
+    });
+
+    for (const { next_state, probability } of targets) {
+      const reward = rewards?.[state]?.[action]?.[next_state];
+      const rewardLabel = reward !== undefined ? `r=${reward}` : 'r=?';
+
+      edges.push({
+        id: `${actionNodeId}->${next_state}`,
+        from: actionNodeId,
+        to: next_state,
+        arrows: 'to',
+        label: `p=${probability}, ${rewardLabel}`,
+      });
+    }
+  }
+}
+
 
   const graph = {
     nodes: Array.from(nodeMap.values()),
