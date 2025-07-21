@@ -88,8 +88,8 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
         <select
           value={nextState}
           onChange={(e) => setNextState(e.target.value)}
-          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded w-full"
-        >
+          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded"
+          >
           <option value="">-- Select Next State --</option>
           {availableNextStates.map((s) => (
             <option key={s} value={s}>{s}</option>
@@ -104,8 +104,8 @@ export default function AddRewardForm({ mdpId, onRewardAdded }: Props) {
           value={reward}
           onChange={(e) => setReward(e.target.value)}
           placeholder="e.g. 10.0"
-          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded w-full"
-        />
+          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded"
+          />
       </div>
 
       <button

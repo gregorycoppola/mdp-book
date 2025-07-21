@@ -42,8 +42,8 @@ export default function SelectActionPair({ mdpId, onPairSelected }: Props) {
             setSelectedState(e.target.value);
             setSelectedAction('');
           }}
-          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded w-full"
-        >
+          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded"
+          >
           <option value="">Select state</option>
           {states.map((s) => (
             <option key={s} value={s}>{s}</option>
@@ -55,8 +55,8 @@ export default function SelectActionPair({ mdpId, onPairSelected }: Props) {
           value={selectedAction}
           onChange={(e) => setSelectedAction(e.target.value)}
           disabled={!selectedState}
-          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded w-full"
-        >
+          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded"
+          >
           <option value="">Select action</option>
           {(actions[selectedState] || []).map((a) => (
             <option key={a} value={a}>{a}</option>

@@ -83,7 +83,7 @@ export default function AddOutcomeForm({ mdpId, onOutcomeAdded }: Props) {
         <select
           value={nextState}
           onChange={(e) => setNextState(e.target.value)}
-          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded w-full"
+          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded"
         >
           <option value="">Select next state</option>
           {availableStates.map((state) => (
