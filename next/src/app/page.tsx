@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import NewMdpButton from '@/components/NewMdpButton';
+import LookupMdpForm from '@/components/LookupMdpForm';
 
 export default function HomePage() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function HomePage() {
       <h1 className="text-3xl font-bold mb-6">MDP Creator</h1>
       <p className="mb-4 text-gray-400">Click below to start a new Markov Decision Process</p>
       <NewMdpButton onCreated={handleNewMdp} />
+      <LookupMdpForm />
     </main>
   );
 }
