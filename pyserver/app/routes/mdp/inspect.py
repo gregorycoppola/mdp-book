@@ -95,3 +95,22 @@ def get_policy(mdp_id: str):
     if not mdp:
         return {"error": "MDP not found"}
     return {"policy": mdp.policy.root}
+
+@router.get("/{mdp_id}/solution")
+def get_solution(mdp_id: str):
+    mdp = load_mdp_from_redis(mdp_id)
+    if not mdp:
+        raise HTTPException(status_code=404, detail="MDP not found")
+
+    if not mdp.V or not mdp.policy:
+        raise HTTPException(status_code=404, detail="Solution not available")
+
+    solution = {
+        state: {
+            "value": mdp.V.root.get(state, 0.0),
+            "best_action": mdp.policy.root.get(state)
+        }
+        for state in mdp.states
+    }
+
+    return {"solution": solution}
