@@ -110,3 +110,22 @@ def inspect_solution(mdp_id):
     """Inspect the solved MDP (state → value + best action)"""
     result = get(f"{API_PREFIX}/{mdp_id}/solution")
     click.echo(json.dumps(result, indent=2))
+
+@cli.command("set-transition-probability")
+@click.argument("mdp_id")
+@click.argument("state")
+@click.argument("action")
+@click.argument("next_state")
+@click.argument("probability", type=float)
+def set_transition_probability(mdp_id, state, action, next_state, probability):
+    """Update probability for a transition (state, action, next_state)"""
+    result = post(
+        f"{API_PREFIX}/{mdp_id}/transition/probability",
+        json={
+            "state": state,
+            "action": action,
+            "next_state": next_state,
+            "probability": probability
+        }
+    )
+    click.echo(json.dumps(result))

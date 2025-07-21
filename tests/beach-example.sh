@@ -5,7 +5,7 @@ set -euo pipefail
 # Models a decision between beach (risky) and cafe (safe)
 # Beach can lead to beach_sun (10 reward) or beach_rain (0 reward)
 
-echo "\U0001F4E6 Creating MDP..."
+echo "📦 Creating MDP..."
 create_out=$(mdp create-mdp --gamma 1.0)
 echo "$create_out"
 
@@ -19,49 +19,50 @@ for state in start beach_sun beach_rain cafe end; do
 done
 
 # Actions
-echo "\U0001F3AF Adding action: beach for state 'start'"
+echo "🎯 Adding actions"
 mdp add-action "$mdp_id" start beach
-
-echo "\U0001F3AF Adding action: cafe for state 'start'"
 mdp add-action "$mdp_id" start cafe
-
-echo "\U0001F3AF Adding action: go for state 'beach_sun'"
 mdp add-action "$mdp_id" beach_sun go
-
-echo "\U0001F3AF Adding action: go for state 'beach_rain'"
 mdp add-action "$mdp_id" beach_rain go
-
-echo "\U0001F3AF Adding action: go for state 'cafe'"
 mdp add-action "$mdp_id" cafe go
 
-# Transitions
-echo "\U0001F501 Adding transitions"
-mdp add-transition "$mdp_id" start beach beach_sun 0.9
-mdp add-transition "$mdp_id" start beach beach_rain 0.1
-mdp add-transition "$mdp_id" start cafe cafe 1.0
+# Transitions (no probabilities set here)
+echo "🔁 Adding transitions"
+mdp add-transition "$mdp_id" start beach beach_sun
+mdp add-transition "$mdp_id" start beach beach_rain
+mdp add-transition "$mdp_id" start cafe cafe
+mdp add-transition "$mdp_id" beach_sun go end
+mdp add-transition "$mdp_id" beach_rain go end
+mdp add-transition "$mdp_id" cafe go end
 
-mdp add-transition "$mdp_id" beach_sun go end 1.0
-mdp add-transition "$mdp_id" beach_rain go end 1.0
-mdp add-transition "$mdp_id" cafe go end 1.0
+# Set transition probabilities
+echo "🎚️ Setting transition probabilities"
+mdp set-transition-probability "$mdp_id" start beach beach_sun 0.9
+mdp set-transition-probability "$mdp_id" start beach beach_rain 0.1
+mdp set-transition-probability "$mdp_id" start cafe cafe 1.0
+mdp set-transition-probability "$mdp_id" beach_sun go end 1.0
+mdp set-transition-probability "$mdp_id" beach_rain go end 1.0
+mdp set-transition-probability "$mdp_id" cafe go end 1.0
 
 # Rewards
-echo "\U0001F4B0 Adding rewards"
+echo "💰 Adding rewards"
 mdp add-reward "$mdp_id" beach_sun go end 10.0
 mdp add-reward "$mdp_id" beach_rain go end 0.0
 mdp add-reward "$mdp_id" cafe go end 5.0
 
 # Solve
-echo "\U0001F9E0 Solving MDP..."
+echo "🧠 Solving MDP..."
 mdp solve "$mdp_id"
 
 # Final MDP structure
-echo "\U0001F4CA Final MDP structure:"
+echo "📊 Final MDP structure:"
 mdp show-mdp "$mdp_id"
 
 # Get values
-echo "\U0001F4C8 Value function:"
+echo "📈 Value function:"
 mdp get-values "$mdp_id"
 
 # Inspect solution
 echo "🔍 Solution overview:"
 mdp inspect "$mdp_id"
+
