@@ -79,6 +79,7 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
   const nodeMap = new Map<string, any>();
   const edges: any[] = [];
 
+  console.log({solution});
   for (const [state, actionMap] of Object.entries(transitions)) {
     let label = state;
     const stateColor = '#ADD8E6';
