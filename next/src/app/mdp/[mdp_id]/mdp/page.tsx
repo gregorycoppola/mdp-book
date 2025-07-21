@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import MDPRenderComponent from '@/components/MDPRenderComponent';
 import AllActionsList from '@/components/AllActionsList';
 import AllTransitionsList from '@/components/AllTransitionsList';
+import RewardsTable from '@/components/RewardsTable';
 
 export default function ViewMDPPage() {
   const { mdp_id } = useParams<{ mdp_id: string }>();
@@ -20,7 +21,9 @@ export default function ViewMDPPage() {
       <MDPRenderComponent mdpId={mdp_id} />
       <AllActionsList mdpId={mdp_id} />
       <AllTransitionsList mdpId={mdp_id} />
-
+      <RewardsTable
+        mdpId={mdp_id}
+      />
     </main>
   );
 }
