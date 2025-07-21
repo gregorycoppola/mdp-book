@@ -136,3 +136,10 @@ def get_graph(mdp_id):
     """Get the full state → action → next_state structure of the MDP"""
     result = get(f"{API_PREFIX}/{mdp_id}/graph")
     click.echo(json.dumps(result, indent=2))
+
+@cli.command("list-states")
+@click.argument("mdp_id")
+def list_states(mdp_id):
+    """List all states in the MDP"""
+    result = get(f"{API_PREFIX}/{mdp_id}/states")
+    click.echo(json.dumps(result, indent=2))
