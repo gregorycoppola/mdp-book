@@ -45,24 +45,43 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
     return <p className="text-red-400 mt-4">Error: {error}</p>;
   }
 
-  const nodes = Object.entries(solution).map(([state, entry]) => ({
-    id: state,
-    label: `${state}\nV=${entry.value.toFixed(2)}${entry.best_action ? `\n→ ${entry.best_action}` : ''}`,
-    shape: 'box',
-    font: { align: 'left' },
-  }));
+  // Safely build unique nodes using a Map
+  const nodeMap = new Map<string, { id: string; label: string; shape: string; font: { align: string } }>();
+  const edges: { from: string; to: string; label: string; arrows: string }[] = [];
 
-  const edges = Object.entries(solution)
-    .filter(([, entry]) => entry.best_action)
-    .map(([state, entry]) => ({
-      from: state,
-      to: findNextState(state, entry.best_action!, solution),
-      label: entry.best_action!,
-      arrows: 'to',
-    }))
-    .filter(e => e.to); // filter nulls if not found
+  for (const [state, { value, best_action }] of Object.entries(solution)) {
+    if (!nodeMap.has(state)) {
+      nodeMap.set(state, {
+        id: state,
+        label: `${state}\nV=${value.toFixed(2)}${best_action ? `\n→ ${best_action}` : ''}`,
+        shape: 'box',
+        font: { align: 'left' },
+      });
+    }
 
-  const graph = { nodes, edges };
+    if (best_action) {
+      if (!nodeMap.has(best_action)) {
+        nodeMap.set(best_action, {
+          id: best_action,
+          label: best_action,
+          shape: 'ellipse',
+          font: { align: 'left' },
+        });
+      }
+
+      edges.push({
+        from: state,
+        to: best_action,
+        label: best_action,
+        arrows: 'to',
+      });
+    }
+  }
+
+  const graph = {
+    nodes: Array.from(nodeMap.values()),
+    edges,
+  };
 
   const options = {
     layout: {
@@ -85,15 +104,4 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
       <Graph graph={graph} options={options} />
     </div>
   );
-}
-
-function findNextState(state: string, action: string, solution: SolutionMap): string | null {
-  // For now, we assume best_action transitions to a unique next state.
-  // If you have transition data available, this should be informed by it.
-  for (const candidate in solution) {
-    if (candidate !== state && solution[candidate].best_action === null) {
-      return candidate; // naive fallback
-    }
-  }
-  return null;
 }
