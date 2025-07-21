@@ -129,3 +129,10 @@ def set_transition_probability(mdp_id, state, action, next_state, probability):
         }
     )
     click.echo(json.dumps(result))
+
+@cli.command("get-graph")
+@click.argument("mdp_id")
+def get_graph(mdp_id):
+    """Get the full state → action → next_state structure of the MDP"""
+    result = get(f"{API_PREFIX}/{mdp_id}/graph")
+    click.echo(json.dumps(result, indent=2))
