@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import AddRewardForm from '@/components/AddRewardForm';
+import RewardsTable from '@/components/RewardsTable';
 
 
 export default function RewardsPage() {
@@ -21,6 +22,8 @@ export default function RewardsPage() {
         mdpId={mdpId}
         onRewardAdded={() => console.log('✅ Reward added')}
       />
+
+      <RewardsTable mdpId={mdpId} />
 
     </main>
   );
