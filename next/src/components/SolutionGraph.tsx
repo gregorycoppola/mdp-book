@@ -109,18 +109,43 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
   const options = {
     layout: {
       hierarchical: {
-        direction: 'UD',
-        sortMethod: 'directed',
+        direction: 'UD',           // Top-down layout
+        sortMethod: 'directed',    // Order nodes by direction
+        nodeSpacing: 150,          // More space between nodes
+        levelSeparation: 120,      // More space between levels
       },
     },
     edges: {
-      arrows: { to: { enabled: true } },
-      smooth: true,
+      arrows: {
+        to: {
+          enabled: true,
+          scaleFactor: 2.0,         // 🚀 Bigger arrows
+        },
+      },
+      color: {
+        color: '#FF0000',           // 🔴 Bright red edges
+        highlight: '#FF0000',
+        hover: '#FF6666',
+      },
+      smooth: {
+        enabled: true,
+        type: 'curvedCW',           // Curved edges for clarity
+        roundness: 0.3,
+      },
+    },
+    nodes: {
+      font: {
+        color: '#FFFFFF',           // White font for contrast
+      },
+      borderWidth: 2,
+      color: {
+        border: '#FFFFFF',
+      },
     },
     height: '600px',
     physics: false,
   };
-
+  
   console.log('[SolutionGraph] Rendering graph with options:', options);
   return (
     <div className="mt-10">
