@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Graph from 'react-graph-vis';
+import Graph from './DynamicGraph';
 
 interface Props {
   mdpId: string;
