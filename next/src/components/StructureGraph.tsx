@@ -63,30 +63,38 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
   const nodeMap = new Map<string, any>();
   const edges: any[] = [];
 
-  for (const [state, { value, best_action }] of Object.entries(solution)) {
+  for (const [state, actionMap] of Object.entries(transitions)) {
+    // Add state node if not already present
+    const value = solution[state]?.value ?? 0;
+    const best_action = solution[state]?.best_action ?? null;
     const label = `${state}\nV=${value.toFixed(2)}${best_action ? `\n→ ${best_action}` : ''}`;
-    nodeMap.set(state, {
-      id: state,
-      label,
-      shape: 'box',
-      color: { background: '#ADD8E6' },
-      font: { align: 'left', color: '#ffffff' },
-    });
 
-    if (best_action) {
-      const actionNodeId = `${state}_${best_action}`;
+    if (!nodeMap.has(state)) {
+      nodeMap.set(state, {
+        id: state,
+        label,
+        shape: 'box',
+        color: { background: '#ADD8E6' },
+        font: { align: 'left', color: '#ffffff' },
+      });
+    }
+
+    for (const [action, targets] of Object.entries(actionMap)) {
+      const actionNodeId = `${state}_${action}`;
 
       if (!nodeMap.has(actionNodeId)) {
         nodeMap.set(actionNodeId, {
           id: actionNodeId,
-          label: best_action,
+          label: action,
           shape: 'ellipse',
-          color: { background: '#90EE90' },
+          color: {
+            background: action === best_action ? '#90EE90' : '#ccccff', // highlight best
+          },
           font: { color: '#000000' },
         });
       }
 
-      // state → action
+      // State → Action
       edges.push({
         id: `${state}->${actionNodeId}`,
         from: state,
@@ -95,27 +103,25 @@ export default function SolutionGraph({ mdpId, refreshTrigger }: Props) {
         label: '',
       });
 
-      // action → each next state (from transitions)
-      const t = transitions[state]?.[best_action];
-      if (t) {
-        for (const { next_state, probability } of t) {
-          if (!nodeMap.has(next_state)) {
-            nodeMap.set(next_state, {
-              id: next_state,
-              label: next_state,
-              shape: 'box',
-              color: { background: '#D3D3D3' },
-              font: { color: '#ffffff' },
-            });
-          }
-          edges.push({
-            id: `${actionNodeId}->${next_state}`,
-            from: actionNodeId,
-            to: next_state,
-            arrows: 'to',
-            label: `${probability}`,
+      for (const { next_state, probability } of targets) {
+        if (!nodeMap.has(next_state)) {
+          nodeMap.set(next_state, {
+            id: next_state,
+            label: next_state,
+            shape: 'box',
+            color: { background: '#D3D3D3' },
+            font: { color: '#ffffff' },
           });
         }
+
+        // Action → Next State
+        edges.push({
+          id: `${actionNodeId}->${next_state}`,
+          from: actionNodeId,
+          to: next_state,
+          arrows: 'to',
+          label: `${probability}`,
+        });
       }
     }
   }
