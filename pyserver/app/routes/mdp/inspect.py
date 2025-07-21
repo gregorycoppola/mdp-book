@@ -50,7 +50,8 @@ def get_actions_for_state(mdp_id: str, state: str):
     if not mdp:
         return {"error": "MDP not found"}
 
-    actions = mdp.actions.data.get(state, [])
+    print("DEBUG actions type:", type(mdp.actions))
+    actions = mdp.actions.root.get(state, [])
     return {"actions": actions}
 
 
