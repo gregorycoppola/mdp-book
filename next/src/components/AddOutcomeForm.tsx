@@ -9,10 +9,9 @@ interface Props {
 }
 
 export default function AddOutcomeForm({ mdpId, onOutcomeAdded }: Props) {
-  const [sourceState, setSourceState] = useState<string>('');
-  const [action, setAction] = useState<string>('');
-  const [nextState, setNextState] = useState<string>('');
-  const [probability, setProbability] = useState<string>('1.0'); // as string for form input
+  const [sourceState, setSourceState] = useState('');
+  const [action, setAction] = useState('');
+  const [nextState, setNextState] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,23 +19,19 @@ export default function AddOutcomeForm({ mdpId, onOutcomeAdded }: Props) {
     setMessage(null);
     setError(null);
 
-    const parsedProb = parseFloat(probability);
-
-    if (!sourceState || !action || !nextState || isNaN(parsedProb)) {
-      setError('⚠️ Must select state, action, and next state and provide a valid probability');
+    if (!sourceState || !action || !nextState.trim()) {
+      setError('⚠️ Must select a state, action, and enter a next state');
       return;
     }
 
     try {
-      const url = `http://localhost:8000/api/mdp/${mdpId}/transition`;
-      const res = await fetch(url, {
+      const res = await fetch(`http://localhost:8000/api/mdp/${mdpId}/transition`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           state: sourceState,
           action,
-          next_state: nextState,
-          probability: parsedProb,
+          next_state: nextState.trim(),
         }),
       });
 
@@ -48,10 +43,9 @@ export default function AddOutcomeForm({ mdpId, onOutcomeAdded }: Props) {
         return;
       }
 
-      const msg = data.message || `Outcome "${nextState}" added to (${sourceState}, ${action}) with p=${parsedProb}`;
+      const msg = data.message || `Outcome "${nextState}" added to (${sourceState}, ${action})`;
       setMessage(msg);
       setNextState('');
-      setProbability('1.0');
       onOutcomeAdded?.();
     } catch (err: any) {
       console.error('❌ [AddOutcomeForm] Error:', err);
@@ -79,17 +73,6 @@ export default function AddOutcomeForm({ mdpId, onOutcomeAdded }: Props) {
           value={nextState}
           onChange={(e) => setNextState(e.target.value)}
           placeholder="e.g. sunny-beach"
-          className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded w-full"
-        />
-      </div>
-
-      <div className="mb-3">
-        <label className="block text-white mb-1">Probability:</label>
-        <input
-          type="text"
-          value={probability}
-          onChange={(e) => setProbability(e.target.value)}
-          placeholder="e.g. 0.8"
           className="px-2 py-1 text-white bg-neutral-800 border border-neutral-600 rounded w-full"
         />
       </div>
