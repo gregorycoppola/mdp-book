@@ -169,18 +169,19 @@ for (const [state, actionMap] of Object.entries(transitions)) {
     },
     edges: {
       arrows: {
-        to: { enabled: true, scaleFactor: 2 },
+        to: { enabled: true, scaleFactor: 1 }, // Smaller arrow tips
       },
       smooth: {
         type: 'curvedCW',
         roundness: 0.3,
       },
       color: {
-        color: '#FF0000',
-        highlight: '#FF0000',
-        hover: '#FF6666',
+        color: '#FFD700',       // Yellow
+        highlight: '#FFD700',
+        hover: '#FFFF00',       // Lighter yellow on hover
       },
     },
+    
     nodes: {
       borderWidth: 2,
       color: { border: '#ffffff' },
