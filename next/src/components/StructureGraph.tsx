@@ -94,8 +94,7 @@ for (const [state, actionMap] of Object.entries(transitions)) {
 // Step 2: Add state nodes with solution info
 for (const state of allStates) {
   let label = state;
-  const stateColor = state === 'end' ? '#666666' : '#003366'; // dark blue
-
+  const stateColor = state === 'end' ? '#000000' : '#003366'; // black background for "end"
 
   if (solution && solution[state]) {
     const { value, best_action } = solution[state];
