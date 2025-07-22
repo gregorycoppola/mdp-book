@@ -124,9 +124,10 @@ for (const [state, actionMap] of Object.entries(transitions)) {
         id: actionNodeId,
         label: action,
         shape: 'ellipse',
-        color: { background: isBest ? '#90EE90' : '#ccccff' },
-        font: { color: '#000000' },
+        color: { background: isBest ? '#006400' : '#228B22' }, // Dark green and forest green
+        font: { color: '#ffffff' }, // White text
       });
+      
     }
 
     edges.push({
